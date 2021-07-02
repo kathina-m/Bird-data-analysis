@@ -37,8 +37,8 @@ plot(SAC, xlab = "sampling plots", ylab = "species richness", main="species accu
 SAC_park <- specaccum(subset(bird, env$category == "park"))
 SAC_fore <- specaccum(subset(bird, env$category == "forest"))
 
-plot(SAC_park, xlab = "Park plots", ylab = "species richness", main="species accumulation curve")
-plot(SAC_fore, xlab = "Forest plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
+plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumulation curve")
+plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
 legend("bottomright", legend = c("park","forest"), col = c("black","green"),lwd=1, bty = "n")
 ```
 
