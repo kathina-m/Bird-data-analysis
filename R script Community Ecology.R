@@ -2,13 +2,20 @@
 #1 Data preparation (note I added a "site" column at the beginning of your data table, which codes the six study sites as 1 to 6)
 
 #1a Import data (depends on your data format - here it's based on a .txt file. For csv files, the command is read.csv or read.csv2)
-dat<-read.table(file.choose(),h=T,sep="\t")
-
+#dat<-read.table(file.choose(),h=T,sep="\t")
+dat<- read.csv("data/bird+environment.csv", sep=";")
+#datenv <- read.csv("data/bird_environment.csv", sep = ";")
 #1b create additional response variables
-require(vegan)
+
+
+dat$plot1 = apply(dat, c(1:3,5:31), sum, na.rm=TRUE)
+#birds$plot2 = apply(birds[ ,7:9], 1, sum, na.rm=TRUE)
+
+library(vegan)
 dat$rich<-specnumber(dat[,5:31]) #species richness
-dat$abund<-rowSums(dat[,5:31]) #abundances
+dat$abund<-rowSums(dat[,5:31], na.rm = TRUE) #abundances
 dat$rarerich<-rarefy(dat[,5:31],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
+
 
 #1c look at the data
 boxplot(rich~category,data=dat)
