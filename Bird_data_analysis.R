@@ -11,7 +11,18 @@ env<-read.csv("data/bird_environment.csv", sep = ";", dec = ",", header = TRUE)
 env[is.na(env)] <- 0
 
 ## in one dataframe
-dat<-read.csv("data/bird_dataset.csv", sep = ",",header=TRUE)
+dat<-read.csv("data/birds_dataset.csv", sep = ",",header=TRUE)
+dat[is.na(dat)] <- 0
+
+## adding richness and abundances
+dat$rich<-specnumber(dat[,5:31]) #species richness
+dat$abund<-rowSums(dat[,5:31]) #abundances
+dat$rarerich<-rarefy(dat[,5:31],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
+
+## looking at the data
+boxplot(rich~category,data=dat)
+boxplot(log(abund+1)~category,data=dat)
+boxplot(rarerich~category,data=dat)
 
 hist(rowSums(bird),
      col = "grey", # colors of bins
@@ -28,4 +39,21 @@ plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumula
 plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
 legend("bottomright", legend = c("park","forest"), col = c("black","green"),lwd=1, bty = "n")
 
-# rarefaction (to smallest species size in dataset) to make different sites comparable
+#### RAREFIED VS. OBSERVED SPECIES ####
+# (rarefied to smallest species size in dataset) to make different sites comparable
+plot(dat$rich, dat$rarerich, main = "Observed vs. Rarefied Richness",
+     xlab = "Observed No. of Species",
+     ylab = "Rarefied No. of Species", pch = 16)
+abline(0, 1) # 1:1 line
+
+#### ORDINATION WITH NMDS ####
+# to check for differences in species composition
+nmd1<-metaMDS(dat[1:15,5:31],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
+plot(nmd1,display="species",type="t") #plot results
+orditkplot(nmd1)
+points(nmd1,pch=c(16,17)[as.numeric(as.factor(dat$category))],cex=1.4) #add sampling points
+legend("topright",pch=c(16,17),c("Forest","Park")) #add legend
+ef<-envfit(nmd1,dat[1:15,34:42]) #check for correlation of dissimilarity gradients with environmental variables
+ef #results
+plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
+
