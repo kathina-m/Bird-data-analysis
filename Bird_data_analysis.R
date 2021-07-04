@@ -11,8 +11,7 @@ env<-read.csv("data/data2/bird_environment.csv", sep = ";", dec = ",", header = 
 env[is.na(env)] <- 0
 
 ## in one dataframe
-dat<-read.csv("data/birds_dataset.csv", sep = ";",header=TRUE)
-#dat[is.na(dat)] <- 0
+dat<-read.csv("data/birds_dataset.csv", sep = ",",header=TRUE)
 
 ## adding richness and abundances
 dat$rich<-specnumber(dat[,5:32]) #species richness
@@ -48,12 +47,13 @@ abline(0, 1) # 1:1 line
 
 #### ORDINATION WITH NMDS ####
 # to check for differences in species composition
-nmd1<-metaMDS(dat[1:15,5:31],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
+nmd1<-metaMDS(dat[,5:28],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
 plot(nmd1,display="species",type="t") #plot results
-orditkplot(nmd1)
 points(nmd1,pch=c(16,17)[as.numeric(as.factor(dat$category))],cex=1.4) #add sampling points
-legend("topright",pch=c(16,17),c("Forest","Park")) #add legend
-ef<-envfit(nmd1,dat[1:15,34:42]) #check for correlation of dissimilarity gradients with environmental variables
+legend("topright",pch=c(16,17),c("Forest","Park"), cex = 0.7) #add legend
+ef<-envfit(nmd1,dat[,33:43]) #check for correlation of dissimilarity gradients with environmental variables
 ef #results
 plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
+
+orditkplot(nmd1)
 
