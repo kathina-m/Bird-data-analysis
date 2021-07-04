@@ -5,19 +5,19 @@ library(tidyverse)
 
 #### READ IN DATA ####
 ## bird and environmental data seperately 
-bird<-read.csv("data/Bird_community.csv", sep=",", header=TRUE, row.names = 1)
+bird<-read.csv("data/data2/Bird_community.csv", sep=",", header=TRUE, row.names = 1)
 bird[is.na(bird)] <- 0
-env<-read.csv("data/bird_environment.csv", sep = ";", dec = ",", header = TRUE)
+env<-read.csv("data/data2/bird_environment.csv", sep = ";", dec = ",", header = TRUE)
 env[is.na(env)] <- 0
 
 ## in one dataframe
-dat<-read.csv("data/birds_dataset.csv", sep = ",",header=TRUE)
-dat[is.na(dat)] <- 0
+dat<-read.csv("data/birds_dataset.csv", sep = ";",header=TRUE)
+#dat[is.na(dat)] <- 0
 
 ## adding richness and abundances
-dat$rich<-specnumber(dat[,5:31]) #species richness
-dat$abund<-rowSums(dat[,5:31]) #abundances
-dat$rarerich<-rarefy(dat[,5:31],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
+dat$rich<-specnumber(dat[,5:32]) #species richness
+dat$abund<-rowSums(dat[,5:32]) #abundances
+dat$rarerich<-rarefy(dat[,5:32],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
 
 ## looking at the data
 boxplot(rich~category,data=dat)

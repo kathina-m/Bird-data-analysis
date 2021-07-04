@@ -3,18 +3,18 @@
 
 #1a Import data (depends on your data format - here it's based on a .txt file. For csv files, the command is read.csv or read.csv2)
 #dat<-read.table(file.choose(),h=T,sep="\t")
-dat<- read.csv("data/bird+environment.csv", sep=";")
+dat<- read.csv("data/birds_dataset.csv", sep=";")
 #datenv <- read.csv("data/bird_environment.csv", sep = ";")
 #1b create additional response variables
 
 
-dat$plot1 = apply(dat, c(1:3,5:31), sum, na.rm=TRUE)
+#dat$plot1 = apply(dat, c(1:3,5:31), sum, na.rm=TRUE)
 #birds$plot2 = apply(birds[ ,7:9], 1, sum, na.rm=TRUE)
 
 library(vegan)
-dat$rich<-specnumber(dat[,5:31]) #species richness
-dat$abund<-rowSums(dat[,5:31], na.rm = TRUE) #abundances
-dat$rarerich<-rarefy(dat[,5:31],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
+dat$rich<-specnumber(dat[,5:32]) #species richness
+dat$abund<-rowSums(dat[,5:32], na.rm = TRUE) #abundances
+dat$rarerich<-rarefy(dat[,5:32],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
 
 
 #1c look at the data
@@ -35,9 +35,9 @@ qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals 
 
 
 #2b linear models: include environmental variables
-round(cor(dat[,34:44]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+round(cor(dat[,34:43]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
-mod2<-lme(rich~category+canopy_cover+n_tree_spec+n_tree_ind+dbh_min+n_microhabitats+longitude,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
+mod2<-lme(rich~category+canopy_cover+n_tree_spec+n_tree_ind+dbh_min+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
 summary(mod2)
 require(MASS) #needed for the stepAIC command
 mod3<-stepAIC(mod2) #model simplification based on AIC-value of the model
