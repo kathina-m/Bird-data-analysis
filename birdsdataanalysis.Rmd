@@ -1,0 +1,105 @@
+---
+title: "Analysis_birdsdata"
+author: "Cheyenne, Kathina & Lina"
+date: "4/7/2021"
+output: html_document
+---
+
+This document have been created to include all relevant parts in the analysis of our animal diversity project.
+
+##Data preparation and data observation
+
+The first code's chunk will be used to load all libraries needed to proceed. 
+```{r}
+library(tidyverse)
+library(vegan)
+library(nlme)
+library(MASS)
+```
+
+In this second chunk, the data to be used will be loaded as our set of dataframes.
+
+```{r}
+dat<- read.csv("data/birds_dataset.csv", sep=";")
+
+```
+
+Following, species richness, species abundance and rarefied richness of species will be calculated.
+
+```{r}
+dat$species_richness<-specnumber(dat[,5:32]) #species richness
+dat$species_abund<-rowSums(dat[,5:32], na.rm = TRUE) #abundances
+dat$rarefied_richness<-rarefy(dat[,5:32],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
+```
+
+After, data is observed comparing the plots from parks and forests.
+
+```{r}
+
+boxplot(species_richness~category,data=dat)
+boxplot(log(species_abund+1)~category,data=dat)
+boxplot(rarefied_richness~category,data=dat)
+
+```
+
+##Now let's begin with the data analysis
+
+#2a linear models: to check for difference between habitat types with the implementation of mixed effect models.
+```{r}
+
+mod1<-lme(species_richness~category,random=(~1|site),data=dat) #model structure, random=... specifies how the data are structured (subsamples nested in study site)
+summary(mod1) #model output - important is the "fixed effects" part. Here "forest" is hiding in the "Intercept" and the categorypark-row is showing the difference between park and forest
+plot(mod1) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+```
+
+
+#2b linear models to include environmental variables and see the variation of the data with each of them. 
+
+```{r}
+
+round(cor(dat[,34:43]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+
+mod2<-lme(species_richness~category+canopy_cover+n_tree_spec+n_tree_ind+dbh_min+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
+summary(mod2)
+
+mod3<-stepAIC(mod2) #model simplification based on AIC-value of the model
+summary(mod3) #final model which includes only the most important predictors
+plot(mod3) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod3,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+
+
+ggplot(dat,aes(x=dbh_min,y=species_richness)) +
+  geom_point() +
+  geom_smooth(method=lm,se=TRUE, colour = 'green', size = 1.5, width = 2)
+````
+
+
+##2c Ordination with NMDS (to look for differences in species composition)
+```{r}
+
+nmd1<-metaMDS(dat[,5:32],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
+
+plot(nmd1,display="species",type="t") #plot results
+points(nmd1,pch=c(16,17)[as.numeric(as.factor(dat$category))],cex=1.4) #add sampling points
+legend("topright",pch=c(16,17),c("Forest","Park")) #add legend
+
+ef<-envfit(nmd1,dat[,34:43]) #check for correlation of dissimilarity gradients with environmental variables
+ef #results
+plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
+```
+
+Now the species accumulation curve is shown.
+```{r}
+SAC <- specaccum(dat[,5:32])
+plot(SAC, xlab = "sampling plots", ylab = "species richness", main="species accumulation curve")
+
+SAC_park <- specaccum(subset(bird, env$category == "park"))
+SAC_fore <- specaccum(subset(bird, env$category == "forest"))
+
+plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumulation curve")
+
+plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
+legend("bottomright", legend = c("park","forest"), col = c("black","green"),lwd=1, bty = "n")
+```
+
