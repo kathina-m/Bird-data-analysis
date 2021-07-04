@@ -103,3 +103,105 @@ plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumula
 legend("bottomright", legend = c("park","forest"), col = c("black","green"),lwd=1, bty = "n")
 ```
 
+
+Analysis of bird's diversity and the variables measured from these two types of ecosystems.
+
+```{r}
+
+parks<- read.csv("data/parks.csv", sep=";")
+forest<- read.csv("data/forest.csv", sep=";")
+alpha <- specnumber(dat[,5:32]) # or use the binary site-species matrix
+gamma <- ncol(dat[, colSums(dat[,5:32])>0])
+
+##Lande’s index 
+gamma - mean(alpha)
+
+##Whittaker’s index
+
+gamma/mean(alpha)
+
+
+
+alphap <- specnumber(parks[,5:32])
+
+gammap <- ncol(parks[,colSums(parks[,5:32])>0])
+
+##Lande’s index 
+gammap - mean(alphap)
+
+##Whittaker’s index
+
+gammap/mean(alphap)
+
+
+alphaf <- specnumber(forest[,5:32])
+
+gammaf <- ncol(parks[,colSums(parks[,5:32])>0])
+
+##Lande’s index 
+gammaf - mean(alphaf)
+
+##Whittaker’s index
+
+gammaf/mean(alphaf)
+
+```
+The number of shared and unique species for a given for the two plots combine and separated.
+```{r}
+beta_virt <- betadiver(dat[,5:32], method = NA)
+# a
+beta_virt$a
+beta_virt$b
+beta_virt$c
+ 
+plot(betadiver(dat[,5:32], method=NA), pch = 16, cex = 2,)
+legend("topleft", legend = "Virtual matrix", bty = "n")
+
+beta_virtp <- betadiver(parks, method = NA)
+# a
+beta_virtp$a
+beta_virtp$b
+beta_virtp$c
+ 
+plot(betadiver(parks, method=NA), pch = 16, cex = 2,)
+legend("topleft", legend = "Virtual matrix", bty = "n")
+               
+               
+```
+We can see how nice heterogeneity is present between the two ecosystems
+
+Now the similarity between plots bby Simpson and Jaccard
+
+```{r}
+
+parks 
+sorparks <-  betadiver(parks[,5:32], method = "sor")
+sorensen <-  as.matrix(sorparks)[,]
+plot(sorensen)
+
+
+simpark<- betadiver(parks[,5:32], method = "sim")
+simpsonpark <- as.matrix(simpark)[,]
+plot(simpsonpark)
+
+sorforest <-  betadiver(forest[,5:32], method = "sor")
+sorensenforest <-  as.matrix(sorforest)[,]
+plot(sorensen)
+
+simf <- betadiver(forest[,5:32], method = "sim")
+simpson <- as.matrix(simf)[,]
+plot(simpson)
+
+
+# Jaccard similarity
+forestjparks <- betadiver(parks[,5:32], method = "j")
+as.matrix(jparks)[,]
+
+
+jforest <- betadiver(forest[,5:32], method = "j")
+as.matrix(jforest)[,]
+
+
+
+```
+
