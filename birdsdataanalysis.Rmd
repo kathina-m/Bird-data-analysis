@@ -3,6 +3,8 @@ title: "Analysis_birdsdata"
 author: "Cheyenne, Kathina & Lina"
 date: "4/7/2021"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 This document have been created to include all relevant parts in the analysis of our animal diversity project.
@@ -27,9 +29,9 @@ dat<- read.csv("data/birds_dataset.csv", sep=";")
 Following, species richness, species abundance and rarefied richness of species will be calculated.
 
 ```{r}
-dat$species_richness<-specnumber(dat[,5:32]) #species richness
-dat$species_abund<-rowSums(dat[,5:32], na.rm = TRUE) #abundances
-dat$rarefied_richness<-rarefy(dat[,5:32],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
+dat$species_richness<-specnumber(dat[,4:31]) #species richness
+dat$species_abund<-rowSums(dat[,4:31]) #abundances
+dat$rarefied_richness<-rarefy(dat[,4:31],min(dat$species_abund)) #rarefied richness based on the subsample with the lowest number of individuals
 ```
 
 After, data is observed comparing the plots from parks and forests.
@@ -58,7 +60,7 @@ qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals 
 
 ```{r}
 
-round(cor(dat[,34:43]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+round(cor(dat[,34:44]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
 mod2<-lme(species_richness~category+canopy_cover+n_tree_spec+n_tree_ind+dbh_min+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
 summary(mod2)
@@ -72,30 +74,27 @@ qqnorm(mod3,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals 
 ggplot(dat,aes(x=dbh_min,y=species_richness)) +
   geom_point() +
   geom_smooth(method=lm,se=TRUE, colour = 'green', size = 1.5, width = 2)
-````
+```
 
 
 ##2c Ordination with NMDS (to look for differences in species composition)
 ```{r}
 
-nmd1<-metaMDS(dat[,5:32],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
+nmd1<-metaMDS(dat[,4:31],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
 
 plot(nmd1,display="species",type="t") #plot results
 points(nmd1,pch=c(16,17)[as.numeric(as.factor(dat$category))],cex=1.4) #add sampling points
 legend("topright",pch=c(16,17),c("Forest","Park")) #add legend
 
-ef<-envfit(nmd1,dat[,34:43]) #check for correlation of dissimilarity gradients with environmental variables
+ef<-envfit(nmd1,dat[,34:44]) #check for correlation of dissimilarity gradients with environmental variables
 ef #results
 plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
 ```
 
 Now the species accumulation curve is shown.
 ```{r}
-SAC <- specaccum(dat[,5:32])
-plot(SAC, xlab = "sampling plots", ylab = "species richness", main="species accumulation curve")
-
-SAC_park <- specaccum(subset(bird, env$category == "park"))
-SAC_fore <- specaccum(subset(bird, env$category == "forest"))
+SAC_park <- specaccum(subset(dat[,4:31], dat$category == "park"))
+SAC_fore <- specaccum(subset(dat[,4:31], dat$category == "forest"))
 
 plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumulation curve")
 
@@ -144,7 +143,6 @@ gammaf - mean(alphaf)
 ##Whittaker’s index
 
 gammaf/mean(alphaf)
-
 ```
 The number of shared and unique species for a given for the two plots combine and separated.
 ```{r}
@@ -200,7 +198,6 @@ as.matrix(jparks)[,]
 
 jforest <- betadiver(forest[,5:32], method = "j")
 as.matrix(jforest)[,]
-
 
 
 ```
