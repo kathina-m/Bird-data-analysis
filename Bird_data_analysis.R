@@ -5,13 +5,14 @@ library(tidyverse)
 
 #### READ IN DATA ####
 ## bird and environmental data seperately 
-bird<-read.csv("data/data2/Bird_community.csv", sep=",", header=TRUE, row.names = 1)
-bird[is.na(bird)] <- 0
-env<-read.csv("data/data2/bird_environment.csv", sep = ";", dec = ",", header = TRUE)
-env[is.na(env)] <- 0
+# bird<-read.csv("data/data2/Bird_community.csv", sep=",", header=TRUE, row.names = 1)
+# bird[is.na(bird)] <- 0
+# env<-read.csv("data/data2/bird_environment.csv", sep = ";", dec = ",", header = TRUE)
+# env[is.na(env)] <- 0
 
 ## in one dataframe
-dat<-read.csv("data/birds_dataset.csv", sep = ",",header=TRUE)
+dat <- read.csv("data/birds_dataset.csv", sep = ";", header=TRUE, dec = ".")
+dat$category <- as.factor(dat$category)
 
 ## adding richness and abundances
 dat$rich<-specnumber(dat[,5:32]) #species richness
