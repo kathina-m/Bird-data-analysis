@@ -13,6 +13,7 @@ library(tidyverse)
 ## in one dataframe
 dat <- read.csv("data/birds_dataset.csv", sep = ";", header=TRUE, dec = ".")
 dat$category <- as.factor(dat$category)
+dat$site <- as.factor(dat$site)
 
 ## adding richness and abundances
 dat$rich <- specnumber(dat[,4:31]) #species richness = column 32 = n_bird_spec
@@ -28,6 +29,27 @@ hist(rowSums(dat[,4:31]),
      col = "grey", # colors of bins
      main = "Bird Community Sampling", # plot title
      xlab = "Number of individuals") # x-axis title
+
+#### LINEAR MODELS ####
+## check for difference between habitat types
+require(nlme) #package required for mixed effects models
+mod1 <- lme(rich ~ category,random = (~1|site), data = dat) #model structure, random=... specifies how the data are structured (subsamples nested in study site)
+summary(mod1) #model output - important is the "fixed effects" part. Here "forest" is hiding in the "Intercept" and the category park-row is showing the difference between park and forest
+plot(mod1) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod1, ~ resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+
+## include environmental variables
+round(cor(dat[,34:44]), 2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+
+mod2 <- lme(rich ~ category + canopy_cover + n_tree_spec + n_tree_ind + dbh_min + n_microhabitats + temperature, random = (~1|site), data = dat, method="ML") #initial, full model with all potential predictor variables
+summary(mod2)
+require(MASS) #needed for the stepAIC command
+mod3 <- stepAIC(mod2) #model simplification based on AIC-value of the model
+summary(mod3) #final model which includes only the most important predictors
+plot(mod3) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod3, ~ resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+
+
 
 #### SPECIES ACCUMULATION CURVE ####
 # how good was sampling effort in the ecosystem types to assess species richness? 
