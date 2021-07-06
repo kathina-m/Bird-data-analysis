@@ -80,7 +80,7 @@ plot(ef, p.max=0.05, col = "darkblue", cex = 1.2) #add significant environmental
 
 # try to make the plot appear a bit more aesthetic 
 ordiplot(nmd1, choices = c(1, 2), type = "text", display = "species", ylim = c(-0.75, 0.5), xlim = c(-1.25, 1.3))
-ordilabel(nmd1, display = "species", fill = "blanchedalmond", border = "darkred", col = "darkred", xpd = T)
+ordilabel(nmd1, display = "species", fill = "blanchedalmond", border = "darkred", col = "darkred", xpd = T, size=0.5)
 points(nmd1, pch=c(16, 17)[as.numeric(as.factor(dat$category))], cex = 1.3, col = "darkblue") #add sampling points
 legend("topright", pch = c(16, 17), c("Forest","Park"), col = "darkblue", cex = 0.7) #add legend
 plot(ef, p.max=0.05, col = "darkblue", cex = 0.8) #add significant environmental variables to the NMDS plot

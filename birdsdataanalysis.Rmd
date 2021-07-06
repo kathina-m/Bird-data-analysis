@@ -62,18 +62,39 @@ qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals 
 
 round(cor(dat[,34:44]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
-mod2<-lme(species_richness~category+canopy_cover+n_tree_spec+n_tree_ind+dbh_min+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
+mod2<-lme(species_richness~category*size+canopy_cover+n_tree_spec+n_tree_ind+log(dbh_min)+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
 summary(mod2)
 
 mod3<-stepAIC(mod2) #model simplification based on AIC-value of the model
-summary(mod3) #final model which includes only the most important predictors
-plot(mod3) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
-qqnorm(mod3,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+summary(mod3) #final model which includes only the most important predictors 
+mod4 <- update(mod3, ~.-n_tree_spec)
+summary(mod4)
+anova(mod3,mod4)
+mod5<- update(mod4, ~.-temperature)
+summary(mod5)
+anova(mod4,mod5) #close to significcance effect with these variables (species increasing with increasing dbh min.) 
+mod6 <- update(mod5, ~.-canopy_cover)
+summary(mod6)
+anova(mod5,mod6)
+plot(mod6) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod6,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 
+#standard deviation, coefficient of variation (sd/mean) to make variation independent from out mean value of dbh_mean in this case, and check whether is correlated with the other variables and if this is the case we would need to include it in mod2 and check correlation with (vif for the model)  and cor for correlation
+
+#dat$sddbh_mean <- sd() we can try as alternative
+#try as well with abundance and rarefiedrichness,
+library(car)
+
+vif(mod3)
 
 ggplot(dat,aes(x=dbh_min,y=species_richness)) +
   geom_point() +
   geom_smooth(method=lm,se=TRUE, colour = 'green', size = 1.5, width = 2)
+
+ggplot(dat, aes(x=log(dbh_min), y=species_richness))+
+  geom_point() +
+  geom_smooth(method=lm,se=TRUE, colour = 'green', size = 1.5, width = 2)
+
 ```
 
 
@@ -84,7 +105,7 @@ nmd1<-metaMDS(dat[,4:31],distance="horn",k=2) #NMDS analysis based on Morisita-H
 
 plot(nmd1,display="species",type="t") #plot results
 points(nmd1,pch=c(16,17)[as.numeric(as.factor(dat$category))],cex=1.4) #add sampling points
-legend("topright",pch=c(16,17),c("Forest","Park")) #add legend
+legend("bottomright",pch=c(16,17),c("Forest","Park")) #add legend
 
 ef<-envfit(nmd1,dat[,34:44]) #check for correlation of dissimilarity gradients with environmental variables
 ef #results
@@ -112,14 +133,15 @@ forest<- read.csv("data/forest.csv", sep=";")
 alpha <- specnumber(dat[,5:32]) # or use the binary site-species matrix
 gamma <- ncol(dat[, colSums(dat[,5:32])>0])
 
-##Lande’s index 
+##Lande’s index  (beta) diversity
 gamma - mean(alpha)
 
 ##Whittaker’s index
 
-gamma/mean(alpha)
+#gamma/mean(alpha)
 
 
+#For parks
 
 alphap <- specnumber(parks[,5:32])
 
@@ -130,9 +152,9 @@ gammap - mean(alphap)
 
 ##Whittaker’s index
 
-gammap/mean(alphap)
+#gammap/mean(alphap)
 
-
+#For forest
 alphaf <- specnumber(forest[,5:32])
 
 gammaf <- ncol(parks[,colSums(parks[,5:32])>0])
@@ -142,7 +164,7 @@ gammaf - mean(alphaf)
 
 ##Whittaker’s index
 
-gammaf/mean(alphaf)
+#gammaf/mean(alphaf)
 ```
 The number of shared and unique species for a given for the two plots combine and separated.
 ```{r}
@@ -164,40 +186,57 @@ beta_virtp$c
 plot(betadiver(parks, method=NA), pch = 16, cex = 2,)
 legend("topleft", legend = "Virtual matrix", bty = "n")
                
-               
+#vennd iagram <- as alternative to show the overlap of shared species    
 ```
 We can see how nice heterogeneity is present between the two ecosystems
 
-Now the similarity between plots bby Simpson and Jaccard
+Now the similarity between plots by Sorensen, Simpson and Jaccard
 
 ```{r}
 
-parks 
+
+#Sorensen similarity
 sorparks <-  betadiver(parks[,5:32], method = "sor")
 sorensen <-  as.matrix(sorparks)[,]
 plot(sorensen)
 
-
+#Simpson similarity
 simpark<- betadiver(parks[,5:32], method = "sim")
 simpsonpark <- as.matrix(simpark)[,]
 plot(simpsonpark)
 
+# Jaccard similarity
+jparks <- betadiver(parks[,5:32], method = "j")
+plot(as.matrix(jparks)[,])
+
+#Sorensen similarity
 sorforest <-  betadiver(forest[,5:32], method = "sor")
 sorensenforest <-  as.matrix(sorforest)[,]
 plot(sorensen)
 
+#Simpson similarity
 simf <- betadiver(forest[,5:32], method = "sim")
 simpson <- as.matrix(simf)[,]
 plot(simpson)
 
 
 # Jaccard similarity
-forestjparks <- betadiver(parks[,5:32], method = "j")
-as.matrix(jparks)[,]
-
 
 jforest <- betadiver(forest[,5:32], method = "j")
 as.matrix(jforest)[,]
+
+plot(as.matrix(jforest)[,])
+
+#calculate mean of these similarities indices and compare between sites
+
+```
+
+RANK abundance curve <- takes the most abundance species and plot it against species abundance rank
+
+```{r}
+
+
+
 
 
 ```
