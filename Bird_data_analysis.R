@@ -16,8 +16,8 @@ dat$category <- as.factor(dat$category)
 dat$site <- as.factor(dat$site)
 
 ## adding richness and abundances
-dat$rich <- specnumber(dat[,4:31]) #species richness = column 32 = n_bird_spec
-dat$abund <- rowSums(dat[,4:31]) #abundances = column 33 = n_bird_ind
+dat$rich <- specnumber(dat[,4:31]) #species richness
+dat$abund <- rowSums(dat[,4:31]) #abundances
 dat$rarerich <- rarefy(dat[,4:31],min(dat$abund)) #rarefied richness based on the subsample with the lowest number of individuals
 
 ## looking at the data
@@ -74,7 +74,7 @@ nmd1 <- metaMDS(dat[,4:31], distance="horn", k=2) #NMDS analysis based on Morisi
 plot(nmd1, display="species", type="t") #plot results
 points(nmd1, pch=c(16,17)[as.numeric(as.factor(dat$category))], cex=1.4) #add sampling points
 legend("topright",pch=c(16,17),c("Forest","Park"), cex = 0.7) #add legend
-ef <- envfit(nmd1,dat[,32:44]) #check for correlation of dissimilarity gradients with environmental variables
+ef <- envfit(nmd1,dat[,32:43]) #check for correlation of dissimilarity gradients with environmental variables
 ef #results
 plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
 
