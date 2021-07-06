@@ -76,7 +76,14 @@ points(nmd1, pch=c(16,17)[as.numeric(as.factor(dat$category))], cex=1.4) #add sa
 legend("topright",pch=c(16,17),c("Forest","Park"), cex = 0.7) #add legend
 ef <- envfit(nmd1,dat[,32:43]) #check for correlation of dissimilarity gradients with environmental variables
 ef #results
-plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
+plot(ef, p.max=0.05, col = "darkblue", cex = 1.2) #add significant environmental variables to the NMDS plot
+
+# try to make the plot appear a bit more aesthetic 
+ordiplot(nmd1, choices = c(1, 2), type = "text", display = "species", ylim = c(-0.75, 0.5), xlim = c(-1.25, 1.3))
+ordilabel(nmd1, display = "species", fill = "blanchedalmond", border = "darkred", col = "darkred", xpd = T)
+points(nmd1, pch=c(16, 17)[as.numeric(as.factor(dat$category))], cex = 1.3, col = "darkblue") #add sampling points
+legend("topright", pch = c(16, 17), c("Forest","Park"), col = "darkblue", cex = 0.7) #add legend
+plot(ef, p.max=0.05, col = "darkblue", cex = 0.8) #add significant environmental variables to the NMDS plot
 
 orditkplot(nmd1)
 
