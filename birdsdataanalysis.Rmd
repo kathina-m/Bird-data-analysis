@@ -19,28 +19,29 @@ library(nlme)
 library(MASS)
 ```
 
-In this second chunk, the data to be used will be loaded as our set of dataframes.
+In this second chunk, the data to be used will be loaded into a data frame and transferred into adequate data types.
 
 ```{r}
-dat<- read.csv("data/birds_dataset.csv", sep=";")
-
+dat <- read.csv("data/birds_dataset.csv", sep=";")
+dat$category <- as.factor(dat$category)
+dat$site <- as.factor(dat$site)
 ```
 
 Following, species richness, species abundance and rarefied richness of species will be calculated.
 
 ```{r}
-dat$species_richness<-specnumber(dat[,4:31]) #species richness
-dat$species_abund<-rowSums(dat[,4:31]) #abundances
-dat$rarefied_richness<-rarefy(dat[,4:31],min(dat$species_abund)) #rarefied richness based on the subsample with the lowest number of individuals
+dat$species_richness <- specnumber(dat[,4:31]) #species richness
+dat$species_abund <- rowSums(dat[,4:31]) #abundances
+dat$rarefied_richness <- rarefy(dat[,4:31],min(dat$species_abund)) #rarefied richness based on the subsample with the lowest number of individuals
+
 ```
 
 After, data is observed comparing the plots from parks and forests.
 
 ```{r}
-
-boxplot(species_richness~category,data=dat)
-boxplot(log(species_abund+1)~category,data=dat)
-boxplot(rarefied_richness~category,data=dat)
+boxplot(species_richness~category, data=dat)
+boxplot(log(species_abund+1)~category, data=dat)
+boxplot(rarefied_richness~category, data=dat)
 
 ```
 
@@ -49,10 +50,10 @@ boxplot(rarefied_richness~category,data=dat)
 #2a linear models: to check for difference between habitat types with the implementation of mixed effect models.
 ```{r}
 
-mod1<-lme(species_richness~category,random=(~1|site),data=dat) #model structure, random=... specifies how the data are structured (subsamples nested in study site)
+mod1 <- lme(species_richness~category, random = (~1|site), data=dat) #model structure, random=... specifies how the data are structured (subsamples nested in study site)
 summary(mod1) #model output - important is the "fixed effects" part. Here "forest" is hiding in the "Intercept" and the categorypark-row is showing the difference between park and forest
 plot(mod1) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
-qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+qqnorm(mod1, ~resid(.,type="p"), abline = c(0,1)) #check for normality of residuals (should not be completely off the line)
 ```
 
 
@@ -60,24 +61,24 @@ qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals 
 
 ```{r}
 
-round(cor(dat[,34:44]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+round(cor(dat[,32:44]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
-mod2<-lme(species_richness~category*size+canopy_cover+n_tree_spec+n_tree_ind+log(dbh_min)+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
+mod2 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
 summary(mod2)
 
-mod3<-stepAIC(mod2) #model simplification based on AIC-value of the model
+mod3 <- stepAIC(mod2) #model simplification based on AIC-value of the model
 summary(mod3) #final model which includes only the most important predictors 
 mod4 <- update(mod3, ~.-n_tree_spec)
 summary(mod4)
-anova(mod3,mod4)
-mod5<- update(mod4, ~.-temperature)
+anova(mod3, mod4)
+mod5 <- update(mod4, ~.-temperature)
 summary(mod5)
-anova(mod4,mod5) #close to significcance effect with these variables (species increasing with increasing dbh min.) 
+anova(mod4, mod5) #close to significcance effect with these variables (species increasing with increasing dbh min.) 
 mod6 <- update(mod5, ~.-canopy_cover)
 summary(mod6)
 anova(mod5,mod6)
 plot(mod6) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
-qqnorm(mod6,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+qqnorm(mod6, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 
 #standard deviation, coefficient of variation (sd/mean) to make variation independent from out mean value of dbh_mean in this case, and check whether is correlated with the other variables and if this is the case we would need to include it in mod2 and check correlation with (vif for the model)  and cor for correlation
 
@@ -87,29 +88,29 @@ library(car)
 
 vif(mod3)
 
-ggplot(dat,aes(x=dbh_min,y=species_richness)) +
+ggplot(dat,aes(x = dbh_min, y = species_richness)) +
   geom_point() +
-  geom_smooth(method=lm,se=TRUE, colour = 'green', size = 1.5, width = 2)
+  geom_smooth(method = lm, se=TRUE, colour = 'green', size = 1.5, width = 2)
 
-ggplot(dat, aes(x=log(dbh_min), y=species_richness))+
+ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
   geom_point() +
-  geom_smooth(method=lm,se=TRUE, colour = 'green', size = 1.5, width = 2)
+  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5, width = 2)
 
 ```
 
 
 ##2c Ordination with NMDS (to look for differences in species composition)
-```{r}
+```{r out.width = "100%"}
+nmd1 <- metaMDS(dat[,4:31], distance="horn", k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
+# orditkplot(nmd1, display = "species", col = "darkred", fill = NA, border = NA, cex = 0.6)
+ordiplot(nmd1, choices = c(1, 2), type = "n") # ylim = c(-0.75, 0.5), xlim = c(-1.25, 1.3))
+ordilabel(nmd1, display = "species", col = "darkred", fill = NA, border = NA, cex = 0.5)
+points(nmd1, pch=c(16, 17)[as.numeric(as.factor(dat$category))], col = "darkblue") #add sampling points
+legend("topright", pch = c(16, 17), c("Forest","Park"), col = "darkblue", cex = 0.7) #add legend
 
-nmd1<-metaMDS(dat[,4:31],distance="horn",k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
-
-plot(nmd1,display="species",type="t") #plot results
-points(nmd1,pch=c(16,17)[as.numeric(as.factor(dat$category))],cex=1.4) #add sampling points
-legend("bottomright",pch=c(16,17),c("Forest","Park")) #add legend
-
-ef<-envfit(nmd1,dat[,34:44]) #check for correlation of dissimilarity gradients with environmental variables
+ef <- envfit(nmd1, dat[,32:44]) #check for correlation of dissimilarity gradients with environmental variables
 ef #results
-plot(ef,p.max=0.05) #add significant environmental variables to the NMDS plot
+plot(ef, p.max=0.05, col = "darkblue", cex = 0.7) #add significant environmental variables to the NMDS plot
 ```
 
 Now the species accumulation curve is shown.
@@ -120,18 +121,17 @@ SAC_fore <- specaccum(subset(dat[,4:31], dat$category == "forest"))
 plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumulation curve")
 
 plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
-legend("bottomright", legend = c("park","forest"), col = c("black","green"),lwd=1, bty = "n")
+legend("bottomright", legend = c("park","forest"), col = c("black","green"), lwd=1, bty = "n")
 ```
 
 
 Analysis of bird's diversity and the variables measured from these two types of ecosystems.
 
 ```{r}
-
-parks<- read.csv("data/parks.csv", sep=";")
-forest<- read.csv("data/forest.csv", sep=";")
-alpha <- specnumber(dat[,5:32]) # or use the binary site-species matrix
-gamma <- ncol(dat[, colSums(dat[,5:32])>0])
+parks <- read.csv("data/parks.csv", sep=";")
+forest <- read.csv("data/forest.csv", sep=";")
+alpha <- specnumber(dat[,4:31]) # or use the binary site-species matrix
+gamma <- ncol(dat[,colSums(dat[,4:31])>0])
 
 ##Lande’s index  (beta) diversity
 gamma - mean(alpha)
@@ -143,9 +143,9 @@ gamma - mean(alpha)
 
 #For parks
 
-alphap <- specnumber(parks[,5:32])
+alphap <- specnumber(parks[,4:31])
 
-gammap <- ncol(parks[,colSums(parks[,5:32])>0])
+gammap <- ncol(parks[,colSums(parks[,4:31]) > 0])
 
 ##Lande’s index 
 gammap - mean(alphap)
@@ -155,9 +155,9 @@ gammap - mean(alphap)
 #gammap/mean(alphap)
 
 #For forest
-alphaf <- specnumber(forest[,5:32])
+alphaf <- specnumber(forest[,4:31])
 
-gammaf <- ncol(parks[,colSums(parks[,5:32])>0])
+gammaf <- ncol(parks[,colSums(parks[,4:31]) > 0])
 
 ##Lande’s index 
 gammaf - mean(alphaf)
@@ -168,13 +168,13 @@ gammaf - mean(alphaf)
 ```
 The number of shared and unique species for a given for the two plots combine and separated.
 ```{r}
-beta_virt <- betadiver(dat[,5:32], method = NA)
+beta_virt <- betadiver(dat[,4:31], method = NA)
 # a
 beta_virt$a
 beta_virt$b
 beta_virt$c
  
-plot(betadiver(dat[,5:32], method=NA), pch = 16, cex = 2,)
+plot(betadiver(dat[,4:31], method=NA), pch = 16, cex = 2,)
 legend("topleft", legend = "Virtual matrix", bty = "n")
 
 beta_virtp <- betadiver(parks, method = NA)
@@ -196,33 +196,33 @@ Now the similarity between plots by Sorensen, Simpson and Jaccard
 
 
 #Sorensen similarity
-sorparks <-  betadiver(parks[,5:32], method = "sor")
+sorparks <-  betadiver(parks[,4:31], method = "sor")
 sorensen <-  as.matrix(sorparks)[,]
 plot(sorensen)
 
 #Simpson similarity
-simpark<- betadiver(parks[,5:32], method = "sim")
+simpark<- betadiver(parks[,4:31], method = "sim")
 simpsonpark <- as.matrix(simpark)[,]
 plot(simpsonpark)
 
 # Jaccard similarity
-jparks <- betadiver(parks[,5:32], method = "j")
+jparks <- betadiver(parks[,1:31], method = "j")
 plot(as.matrix(jparks)[,])
 
 #Sorensen similarity
-sorforest <-  betadiver(forest[,5:32], method = "sor")
+sorforest <-  betadiver(forest[,4:31], method = "sor")
 sorensenforest <-  as.matrix(sorforest)[,]
 plot(sorensen)
 
 #Simpson similarity
-simf <- betadiver(forest[,5:32], method = "sim")
+simf <- betadiver(forest[,4:31], method = "sim")
 simpson <- as.matrix(simf)[,]
 plot(simpson)
 
 
 # Jaccard similarity
 
-jforest <- betadiver(forest[,5:32], method = "j")
+jforest <- betadiver(forest[,4:31], method = "j")
 as.matrix(jforest)[,]
 
 plot(as.matrix(jforest)[,])

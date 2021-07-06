@@ -39,7 +39,7 @@ plot(mod1) #check for homogeneity of variances (data points should have similar 
 qqnorm(mod1, ~ resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 
 ## include environmental variables
-round(cor(dat[,34:44]), 2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+round(cor(dat[,32:44]), 2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
 mod2 <- lme(rich ~ category + canopy_cover + n_tree_spec + n_tree_ind + dbh_min + n_microhabitats + temperature, random = (~1|site), data = dat, method="ML") #initial, full model with all potential predictor variables
 summary(mod2)
@@ -79,8 +79,8 @@ ef #results
 plot(ef, p.max=0.05, col = "darkblue", cex = 1.2) #add significant environmental variables to the NMDS plot
 
 # try to make the plot appear a bit more aesthetic 
-ordiplot(nmd1, choices = c(1, 2), type = "text", display = "species", ylim = c(-0.75, 0.5), xlim = c(-1.25, 1.3))
-ordilabel(nmd1, display = "species", fill = "blanchedalmond", border = "darkred", col = "darkred", xpd = T, size=0.5)
+ordiplot(nmd1, choices = c(1, 2), type = "n") # ylim = c(-0.75, 0.5), xlim = c(-1.25, 1.3))
+ordilabel(nmd1, display = "species", col = "darkred", fill = NA, border = NA, cex = 0.7)
 points(nmd1, pch=c(16, 17)[as.numeric(as.factor(dat$category))], cex = 1.3, col = "darkblue") #add sampling points
 legend("topright", pch = c(16, 17), c("Forest","Park"), col = "darkblue", cex = 0.7) #add legend
 plot(ef, p.max=0.05, col = "darkblue", cex = 0.8) #add significant environmental variables to the NMDS plot
