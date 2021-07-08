@@ -17,6 +17,7 @@ library(tidyverse)
 library(vegan)
 library(nlme)
 library(MASS)
+library(MuMIn)
 ```
 
 In this second chunk, the data to be used will be loaded into a data frame and transferred into adequate data types.
@@ -60,6 +61,7 @@ qqnorm(mod1, ~resid(.,type="p"), abline = c(0,1)) #check for normality of residu
 #2b linear models to include environmental variables and see the variation of the data with each of them. 
 
 ```{r}
+### MIXED EFFECTS MODEL WITH SPECIES RICHNESS
 
 round(cor(dat[,32:45]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
@@ -77,13 +79,18 @@ anova(mod4, mod5) #close to significcance effect with these variables (species i
 mod6 <- update(mod5, ~.-canopy_cover)
 summary(mod6)
 anova(mod5,mod6)
+
+#final model:
+#lme(species_richness ~ log(dbh_min), random = (~1|site), data=dat, method="ML")
+#https://jonlefcheck.net/2013/03/13/r2-for-linear-mixed-effects-models/
+r.squaredGLMM(mod6)
+
 plot(mod6) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
 qqnorm(mod6, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 
 #standard deviation, coefficient of variation (sd/mean) to make variation independent from out mean value of dbh_mean in this case, and check whether is correlated with the other variables and if this is the case we would need to include it in mod2 and check correlation with (vif for the model)  and cor for correlation
 
 #dat$sddbh_mean <- sd() we can try as alternative
-#try as well with abundance and rarefiedrichness,
 library(car)
 
 vif(mod3)
@@ -94,9 +101,46 @@ ggplot(dat,aes(x = dbh_min, y = species_richness)) +
 
 ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
   geom_point() +
-  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5, width = 2)+
-  geom_text(x=2.7, y=16, label="p-value: 0.0125", size=4)
+  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=2.6, y=16, label="p-value: 0.0001", size=3.5) +
+  geom_text(x=2.7,y=15.2,label=expression(paste("R"^2,"c: 0.6851")), size=3.5) +
+  labs(x="log(mininmal dbh [cm])", y="actual species richness")
 
+### MIXED EFFECTS MODEL WITH BIRD ABUNDANCE
+mod2 <- lme(species_abund ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+summary(mod2)
+
+mod3 <- stepAIC(mod2) #model simplification based on AIC-value of the model
+summary(mod3) #final model which includes only the most important predictors 
+mod4 <- update(mod3, ~.-size)
+summary(mod4)
+anova(mod3, mod4)
+mod5<-update(mod4, ~.-log(dbh_min))
+summary(mod5)
+
+# plot model for abundance vs. canopy cover
+mod_can<-lme(species_abund ~ canopy_cover, random = (~1|site), data=dat, method="ML")
+r.squaredGLMM(mod_can)
+  
+ggplot(dat, aes(x = canopy_cover, y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=70, y=35, label="p-value: 0.0015", size=3.5) +
+  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.5312")), size=3.5) +
+  labs(x="canopy cover [%]", y="actual species abundance")
+
+# plot model for abundance vs. microhabitats
+mod_mic<-lme(species_abund ~ n_microhabitats, random = (~1|site), data=dat, method="ML")
+r.squaredGLMM(mod_mic)
+  
+ggplot(dat, aes(x = n_microhabitats, y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=15, y=35, label="p-value: 0.0098", size=3.5) +
+  geom_text(x=14.15,y=33.5, label=expression(paste("R"^2,"c: 0.5755")), size=3.5) +
+  labs(x="number of microhabitats", y="actual species abundance")
+
+### MIXED EFFECTS MODEL WITH RAREFIED RICHNESS
 ```
 
 
