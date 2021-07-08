@@ -35,7 +35,7 @@ qqnorm(mod1,~resid(.,type="p"),abline=c(0,1)) #check for normality of residuals 
 
 
 #2b linear models: include environmental variables
-round(cor(dat[,34:43]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
+round(cor(dat[,34:45]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
 mod2<-lme(rich~category+canopy_cover+n_tree_spec+n_tree_ind+dbh_min+n_microhabitats+temperature,random=(~1|site),data=dat,method="ML") #initial, full model with all potential predictor variables
 summary(mod2)

@@ -94,7 +94,8 @@ ggplot(dat,aes(x = dbh_min, y = species_richness)) +
 
 ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
   geom_point() +
-  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5, width = 2)
+  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5, width = 2)+
+  geom_text(x=2.7, y=16, label="p-value: 0.0125", size=4)
 
 ```
 
