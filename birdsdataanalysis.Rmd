@@ -141,6 +141,25 @@ ggplot(dat, aes(x = n_microhabitats, y = species_abund))+
   labs(x="number of microhabitats", y="actual species abundance")
 
 ### MIXED EFFECTS MODEL WITH RAREFIED RICHNESS
+mod2 <- lme(rarefied_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+summary(mod2)
+
+mod3 <- stepAIC(mod2) #model simplification based on AIC-value of the model
+summary(mod3) #final model which includes only the most important predictors 
+
+# plot model for rarefied richness vs. min dbh
+mod_dbh<-lme(rarefied_richness ~ log(dbh_min), random = (~1|site), data=dat, method="ML")
+r.squaredGLMM(mod3)
+  
+ggplot(dat, aes(x = rarefied_richness, y = log(dbh_min)))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=70, y=35, label="p-value: 0.0223", size=3.5) +
+  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.4573")), size=3.5) +
+  labs(x="log(minimal dbh [cm])", y="rarefied species richness")
+
+#plot(log(dbh_min)~rarefied_richness, data=dat, ylim=c(0,5))
+#mod<-lm(rarefied_richness ~ log(dbh_min), data=dat, poly(degree = 2))
 ```
 
 
@@ -279,10 +298,48 @@ plot(as.matrix(jforest)[,])
 RANK abundance curve <- takes the most abundance species and plot it against species abundance rank
 
 ```{r}
+plot1_1 <- data.frame(sp = colnames(dat[,4:31]),
+                       ab = as.numeric(dat[1,4:31]))
+
+# Add rank of species in the first community
+plot1_1$rank <- rank(-plot1_1$ab, ties.method = "random")
+# Ordering data before plotting
+plot1_1 <- plot1_1[order(plot1_1$rank), ]
+# Plot
+plot(plot1_1$rank, plot1_1$ab, type = "b",
+     col = rgb(grey), pch = 16, lwd = 1,
+     main = "RAD",
+     xlab = "Rank", ylab = "Abundances")
+
+plot1_2 <- data.frame(sp = colnames(dat[,4:31]),
+                       ab = as.numeric(dat[2,4:31]))
+plot1_2$rank <- rank(-plot1_2$ab, ties.method = "random")
+plot1_2 <- plot1_2[order(plot1_2$rank), ]
+points(plot1_2$rank, plot1_2$ab, type = "b",
+     col = "orchid1", pch = 16, lwd = 1)
+
+plot1_3 <- data.frame(sp = colnames(dat[,4:31]),
+                       ab = as.numeric(dat[3,4:31]))
+plot1_3$rank <- rank(-plot1_3$ab, ties.method = "random")
+plot1_3 <- plot1_3[order(plot1_3$rank), ]
+points(plot1_3$rank, plot1_3$ab, type = "b",
+     col = "steelblue1", pch = 16, lwd = 1)
 
 
+plot2_1 <- data.frame(sp = colnames(dat[,4:31]),
+                       ab = as.numeric(dat[4,4:31]))
+plot2_1$rank <- rank(-plot2_1$ab, ties.method = "random")
+plot2_1 <- plot2_1[order(plot2_1$rank), ]
+points(plot2_1$rank, plot2_1$ab, type = "b",
+     col = "orange2", pch = 16, lwd = 1)
 
+plot2_2 <- data.frame(sp = colnames(dat[,4:31]),
+                       ab = as.numeric(dat[5,4:31]))
+plot2_2$rank <- rank(-plot2_2$ab, ties.method = "random")
+plot2_2 <- plot2_2[order(plot2_2$rank), ]
+points(plot2_2$rank, plot2_2$ab, type = "b",
+     col = "indianred3", pch = 16, lwd = 1)
 
-
+#... and so on...
 ```
 
