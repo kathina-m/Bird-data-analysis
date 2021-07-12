@@ -1,0 +1,10 @@
+﻿site;category;replicate;Anas platyrhynchos;Anthus trivialis;Apus apus;Carduelis carduelis;Certhia brachydactyla;Columba palumbus;Corvus corone;Delichon urbicum;Dendrocopos major;Dryobates minor;Dryocopus martius;Erithacus rubecula;Fringilla coelebs;Gallinula chloropus;Muscicapa striata;Parus caeruleus;Parus major;Passer domesticus;Phylloscopus collybita;Pyrrhula pyrrhula;Regulus ignicapilla;Regulus regulus;Sitta europaea;Sylvia atricapilla;Troglodytes troglodytes;Turdus merula;Turdus philomelos;Turdus viscivorus;canopy_cover;n_tree_spec;n_tree_ind;dbh_min;dbh_mean;dbh_max;dbh_median;dbh_sd;n_microhabitats;latitude;longitude;size;temperature
+1_kloster;park;1_1;0;0;0;2;0;4;1;0;0;0;0;0;2;1;1;1;1;0;0;0;0;0;0;1;0;5;2;0;70;6;11;18.46;58.68;120;51.88;34.55;5;51.562921;9.9227607;4;9
+1_kloster;park;1_2;0;0;7;0;0;2;5;0;0;0;0;0;3;1;0;3;2;0;2;0;1;0;0;0;1;6;0;3;50;5;14;54.11;99.75;130.83;108.705;25.23;29;51.563816;9.927742;4;9
+1_kloster;park;1_3;2;0;3;0;0;4;4;0;0;1;0;1;4;0;0;1;1;2;1;0;0;0;0;1;1;5;0;0;15;7;12;38.83;73.03;149.29;55.545;33.17;7;51.563831;9.929237;4;9
+5_cheltenham;park;5_1;0;0;1;0;0;5;0;0;0;0;0;0;1;0;0;0;2;8;1;0;0;0;0;0;0;1;0;0;35;9;15;9.87;59.18;131.46;51.25;33.46;3;51.533173;9.942622;3.2;20
+5_cheltenham;park;5_2;0;0;3;0;0;4;1;0;1;0;0;0;1;0;0;0;3;0;2;0;0;0;0;0;0;2;0;0;55;7;15;31.51;67.33;126.05;54.11;31.52;1;51.531902;9.942084;3.2;20
+5_cheltenham;park;5_3;0;0;7;1;1;4;0;1;0;0;0;0;0;0;0;0;3;0;2;0;0;0;0;1;0;4;0;0;20;10;16;9.39;58.06;118.41;52.045;40.35;3;51.531605;9.940694;3.2;20
+6_cemetery;park;6_1;0;0;0;0;0;5;0;0;0;0;0;1;1;0;0;1;1;0;0;0;0;0;0;1;1;2;5;0;30;9;17;11.46;9.87;9.55;46.47;37.42;1;51.531337;9.907653;36;13
+6_cemetery;park;6_2;0;0;0;1;0;4;1;0;1;0;0;0;1;0;0;1;2;0;2;0;0;0;1;1;1;6;4;0;15;10;18;54.34;49.82;45.68;47.11;26.61;1;51.531507;9.909075;36;13
+6_cemetery;park;6_3;0;0;0;1;1;6;0;0;1;0;0;2;1;0;0;1;2;0;1;0;0;2;1;0;1;4;1;0;30;8;18;147.7;88.17;98.36;42.97;24.05;2;51.532197;9.909544;36;13
