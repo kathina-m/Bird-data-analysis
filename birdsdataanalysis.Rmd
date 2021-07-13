@@ -309,229 +309,331 @@ plot(as.matrix(jforest)[,])
 
 ```
 
-RANK abundance curve <- takes the most abundance species and plot it against species abundance rank
+RANK abundance curve <- takes abundant species per site and plot it against relative species abundance rank
 
 ```{r}
+# Klosterpark
+plot1_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[1,4:31]))
+plot1_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[2,4:31]))
+plot1_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[3,4:31]))
+
+plot1_12 <- merge(plot1_1, plot1_2, by = "sp")
+plot1 <- merge(plot1_12, plot1_3, by = "sp")
+plot1$abun <- plot1$ab.x + plot1$ab.y + plot1$ab
+plot1 <- plot1[which(plot1$abun!=0),]
+dim(plot1)
+plot1$relabun <- plot1$abun * 100 / sum(plot1$abun)
+plot1$rank <- rank(-plot1$relabun, ties.method = "random")
+plot1 <- plot1[order(plot1$rank),]
+
+# City Forest
+plot2_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[4,4:31]))
+plot2_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[5,4:31]))
+plot2_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[6,4:31]))
+
+plot2_12 <- merge(plot2_1, plot2_2, by = "sp")
+plot2 <- merge(plot2_12, plot2_3, by = "sp")
+plot2$abun <- plot2$ab.x + plot2$ab.y + plot2$ab
+plot2 <- plot2[which(plot2$abun!=0),]
+dim(plot2)
+plot2$relabun <- plot2$abun * 100 / sum(plot2$abun)
+plot2$rank <- rank(-plot2$abun, ties.method = "random")
+plot2 <- plot2[order(plot2$rank),]
+
+# Forest Weende
+plot3_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[7,4:31]))
+plot3_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[8,4:31]))
+plot3_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[9,4:31]))
+
+plot3_12 <- merge(plot3_1, plot3_2, by = "sp")
+plot3 <- merge(plot3_12, plot3_3, by = "sp")
+plot3$abun <- plot3$ab.x + plot3$ab.y + plot3$ab
+plot3 <- plot3[which(plot3$abun!=0),]
+dim(plot3)
+plot3$relabun <- plot3$abun * 100 / sum(plot3$abun)
+plot3$rank <- rank(-plot3$abun, ties.method = "random")
+plot3 <- plot3[order(plot3$rank),]
+
+# Forest Billingshäuser Schlucht
+plot4_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[10,4:31]))
+plot4_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[11,4:31]))
+plot4_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[12,4:31]))
+
+plot4_12 <- merge(plot4_1, plot4_2, by = "sp")
+plot4 <- merge(plot4_12, plot4_3, by = "sp")
+plot4$abun <- plot4$ab.x + plot4$ab.y + plot4$ab
+plot4 <- plot4[which(plot4$abun!=0),]
+dim(plot4)
+plot4$relabun <- plot4$abun * 100 / sum(plot4$abun)
+plot4$rank <- rank(-plot4$abun, ties.method = "random")
+plot4 <- plot4[order(plot4$rank),]
+
+# Cheltenham Park
+plot5_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[13,4:31]))
+plot5_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[14,4:31]))
+plot5_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[15,4:31]))
+
+plot5_12 <- merge(plot5_1, plot5_2, by = "sp")
+plot5 <- merge(plot5_12, plot5_3, by = "sp")
+plot5$abun <- plot5$ab.x + plot5$ab.y + plot5$ab
+plot5 <- plot5[which(plot5$abun!=0),]
+dim(plot5)
+plot5$relabun <- plot5$abun * 100 / sum(plot5$abun)
+plot5$rank <- rank(-plot5$abun, ties.method = "random")
+plot5 <- plot5[order(plot5$rank),]
+
+# City Cemetery
+plot6_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[16,4:31]))
+plot6_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[17,4:31]))
+plot6_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[18,4:31]))
+
+plot6_12 <- merge(plot6_1, plot6_2, by = "sp")
+plot6 <- merge(plot6_12, plot6_3, by = "sp")
+plot6$abun <- plot6$ab.x + plot6$ab.y + plot6$ab
+plot6 <- plot6[which(plot6$abun!=0),]
+dim(plot6)
+plot6$relabun <- plot6$abun * 100 / sum(plot6$abun)
+plot6$rank <- rank(-plot6$abun, ties.method = "random")
+plot6 <- plot6[order(plot6$rank),]
+
+# Plotting
+plot(plot1$rank, plot1$relabun, type = "l",
+     col = "blue3", pch = 16, lwd = 2,
+     ylim = c(0, 35),
+     xlab = "Rank", ylab = "relative species abundance [%]")
+points(plot2$rank, plot2$relabun, type = "l",
+       col = "red2", pch = 16, lwd = 2)
+points(plot3$rank, plot3$relabun, type = "l",
+       col = "coral1", pch = 16, lwd = 2)
+points(plot4$rank, plot4$relabun, type = "l",
+       col = "pink", pch = 16, lwd = 2)
+points(plot5$rank, plot5$relabun, type = "l",
+       col = "deepskyblue", pch = 16, lwd = 2)
+points(plot6$rank, plot6$relabun, type = "l",
+       col = "deepskyblue3", pch = 16, lwd = 2)
+legend("topright",legend = c("Klosterpark Weende (20 species)", "Cheltenham Park (13 species)", "City Cemetery (16 species)", "City Forest (12 species)", "Forest Weende (12 species)", "Forest Schlucht (12 species)"), col = c("blue3", "deepskyblue", "deepskyblue3", "red2", "coral1", "pink"), cex = 0.7, pch = 16)
+
 
 #library(wesanderson)
 #library("RColorBrewer")
 
+#par(mfrow = c(1, 1))
+#plot1_1 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[1,4:31]))
 
-par(mfrow = c(1, 1))
-plot1_1 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[1,4:31]))
-
-plot1_1 <- plot1_1[which(plot1_1$ab!=0),]
-dim(plot1_1)
+#plot1_1 <- plot1_1[which(plot1_1$ab!=0),]
+#dim(plot1_1)
 
 # Add rank of species in the first community
-plot1_1$rank <- rank(-plot1_1$ab, ties.method = "random")
+#plot1_1$rank <- rank(-plot1_1$ab, ties.method = "random")
 # Ordering data before plotting
-plot1_1 <- plot1_1[order(plot1_1$rank), ]
+#plot1_1 <- plot1_1[order(plot1_1$rank), ]
 # Plot
-plot(plot1_1$rank, plot1_1$ab, type = "b",
-     col = "coral", pch = 16, lwd = 1,
-     main = "RAD",
-     xlab = "Rank", ylab = "Abundances")
+#plot(plot1_1$rank, plot1_1$ab, type = "b",
+#   col = "coral", pch = 16, lwd = 1,
+#   main = "RAD",
+#   xlab = "Rank", ylab = "Abundances")
 
 
 
-plot1_2 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[2,4:31]))
-plot1_2 <- plot1_2[which(plot1_2$ab!=0),]
-dim(plot1_2)
+#plot1_2 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[2,4:31]))
+#plot1_2 <- plot1_2[which(plot1_2$ab!=0),]
+#dim(plot1_2)
 
-plot1_2$rank <- rank(-plot1_2$ab, ties.method = "random")
+#plot1_2$rank <- rank(-plot1_2$ab, ties.method = "random")
 
-plot1_2 <- plot1_2[order(plot1_2$rank), ]
-points(plot1_2$rank, plot1_2$ab, type = "both",   col = "coral2", pch = 16)
+#plot1_2 <- plot1_2[order(plot1_2$rank), ]
+#points(plot1_2$rank, plot1_2$ab, type = "both",   col = "coral2", pch = 16)
 
-plot1_3 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[3,4:31]))
+#plot1_3 <- data.frame(sp = colnames(dat[,4:31]), ab = as.numeric(dat[3,4:31]))
 
-plot1_3 <- plot1_3[which(plot1_3$ab!=0),]
-dim(plot1_3)
-plot1_3$rank <- rank(-plot1_3$ab, ties.method = "random")
-plot1_3 <- plot1_3[order(plot1_3$rank), ]
-points(plot1_3$rank, plot1_3$ab, type = "b",
-     col = "coral3", pch = 16, lwd = 1)
+#plot1_3 <- plot1_3[which(plot1_3$ab!=0),]
+#dim(plot1_3)
+#plot1_3$rank <- rank(-plot1_3$ab, ties.method = "random")
+#plot1_3 <- plot1_3[order(plot1_3$rank), ]
+#points(plot1_3$rank, plot1_3$ab, type = "b",
+# col = "coral3", pch = 16, lwd = 1)
 
 
-plot2_1 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[4,4:31]))
-plot2_1 <- plot2_1[which(plot2_1$ab!=0),]
-dim(plot2_1)
-plot2_1$rank <- rank(-plot2_1$ab, ties.method = "random")
-plot2_1 <- plot2_1[order(plot2_1$rank), ]
-points(plot2_1$rank, plot2_1$ab, type = "b",
-     col = "aquamarine", pch = 16, lwd = 1)
+#plot2_1 <- data.frame(sp = colnames(dat[,4:31]),
+#                  ab = as.numeric(dat[4,4:31]))
+#plot2_1 <- plot2_1[which(plot2_1$ab!=0),]
+#dim(plot2_1)
+#$rank <- rank(-plot2_1$ab, ties.method = "random")
+#plot2_1 <- plot2_1[order(plot2_1$rank), ]
+#points(plot2_1$rank, plot2_1$ab, type = "b",
+#   col = "aquamarine", pch = 16, lwd = 1)
 
 
 
-plot2_2 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[5,4:31]))
-plot2_2 <- plot2_2[which(plot2_2$ab!=0),]
-dim(plot2_2)
-plot2_2$rank <- rank(-plot2_2$ab, ties.method = "random")
-plot2_2 <- plot2_2[order(plot2_2$rank), ]
-points(plot2_2$rank, plot2_2$ab, type = "b",
-     col = "aquamarine3", pch = 16, lwd = 1)
+#plot2_2 <- data.frame(sp = colnames(dat[,4:31]),
+#                    ab = as.numeric(dat[5,4:31]))
+#plot2_2 <- plot2_2[which(plot2_2$ab!=0),]
+#dim(plot2_2)
+#plot2_2$rank <- rank(-plot2_2$ab, ties.method = "random")
+#plot2_2 <- plot2_2[order(plot2_2$rank), ]
+#points(plot2_2$rank, plot2_2$ab, type = "b",
+#  col = "aquamarine3", pch = 16, lwd = 1)
 
-plot2_3 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[6,4:31]))
-plot2_3 <- plot2_3[which(plot2_3$ab!=0),]
-dim(plot2_3)
-plot2_3$rank <- rank(-plot2_3$ab, ties.method = "random")
-plot2_3 <- plot2_3[order(plot2_3$rank), ]
-points(plot2_3$rank, plot2_3$ab, type = "b",
-     col = "aquamarine4", pch = 16, lwd = 1)
+#plot2_3 <- data.frame(sp = colnames(dat[,4:31]),
+#                ab = as.numeric(dat[6,4:31]))
+#plot2_3 <- plot2_3[which(plot2_3$ab!=0),]
+#dim(plot2_3)
+#plot2_3$rank <- rank(-plot2_3$ab, ties.method = "random")
+#plot2_3 <- plot2_3[order(plot2_3$rank), ]
+#points(plot2_3$rank, plot2_3$ab, type = "b",
+#  col = "aquamarine4", pch = 16, lwd = 1)
 
-plot3_1 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[7,4:31]))
-plot3_1 <- plot3_1[which(plot3_1$ab!=0),]
-dim(plot3_1)
-plot3_1$rank <- rank(-plot3_1$ab, ties.method = "random")
-plot3_1 <- plot3_1[order(plot3_1$rank), ]
-points(plot3_1$rank, plot3_1$ab, type = "b",
-     col = "antiquewhite", pch = 16, lwd = 1)
+#plot3_1 <- data.frame(sp = colnames(dat[,4:31]),
+#                    ab = as.numeric(dat[7,4:31]))
+#plot3_1 <- plot3_1[which(plot3_1$ab!=0),]
+#dim(plot3_1)
+#plot3_1$rank <- rank(-plot3_1$ab, ties.method = "random")
+#plot3_1 <- plot3_1[order(plot3_1$rank), ]
+#points(plot3_1$rank, plot3_1$ab, type = "b",
+#  col = "antiquewhite", pch = 16, lwd = 1)
 
-plot3_2 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[8,4:31]))
-plot3_2 <- plot3_2[which(plot3_1$ab!=0),]
-dim(plot3_2)
-plot3_2$rank <- rank(-plot3_2$ab, ties.method = "random")
-plot3_2 <- plot3_2[order(plot3_2$rank), ]
-points(plot3_2$rank, plot3_2$ab, type = "b",
-     col = "antiquewhite3", pch = 16, lwd = 1)
-
-
-plot3_3 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[9,4:31]))
-plot3_3 <- plot3_3[which(plot3_1$ab!=0),]
-dim(plot3_3)
-plot3_3$rank <- rank(-plot3_3$ab, ties.method = "random")
-plot3_3 <- plot3_3[order(plot3_3$rank), ]
-points(plot3_3$rank, plot3_3$ab, type = "b",
-     col = "antiquewhite4", pch = 16, lwd = 1)
+#plot3_2 <- data.frame(sp = colnames(dat[,4:31]),
+#                ab = as.numeric(dat[8,4:31]))
+#plot3_2 <- plot3_2[which(plot3_1$ab!=0),]
+#(plot3_2)
+#plot3_2$rank <- rank(-plot3_2$ab, ties.method = "random")
+#plot3_2 <- plot3_2[order(plot3_2$rank), ]
+#points(plot3_2$rank, plot3_2$ab, type = "b",
+#   col = "antiquewhite3", pch = 16, lwd = 1)
 
 
-plot4_1 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[10,4:31]))
-plot4_1 <- plot4_1[which(plot4_1$ab!=0),]
-dim(plot4_1)
-plot4_1$rank <- rank(-plot4_1$ab, ties.method = "random")
-plot4_1 <- plot4_1[order(plot4_1$rank), ]
-points(plot4_1$rank, plot4_1$ab, type = "b",
-     col = "brown1", pch = 16, lwd = 1)
-
-plot4_2 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[11,4:31]))
-plot4_2 <- plot4_2[which(plot4_2$ab!=0),]
-dim(plot4_2)
-plot4_2$rank <- rank(-plot4_2$ab, ties.method = "random")
-plot4_2 <- plot4_2[order(plot4_1$rank), ]
-points(plot4_2$rank, plot4_2$ab, type = "b",
-     col = "brown4", pch = 16, lwd = 1)
-
-plot4_3 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[12,4:31]))
-plot4_3 <- plot4_3[which(plot4_3$ab!=0),]
-dim(plot4_3)
-plot4_3$rank <- rank(-plot4_3$ab, ties.method = "random")
-plot4_3 <- plot4_3[order(plot4_3$rank), ]
-points(plot4_3$rank, plot4_3$ab, type = "b",
-     col = "brown2", pch = 16, lwd = 1)
+#plot3_3 <- data.frame(sp = colnames(dat[,4:31]),
+#                   ab = as.numeric(dat[9,4:31]))
+#plot3_3 <- plot3_3[which(plot3_1$ab!=0),]
+#dim(plot3_3)
+#plot3_3$rank <- rank(-plot3_3$ab, ties.method = "random")
+#plot3_3 <- plot3_3[order(plot3_3$rank), ]
+#points(plot3_3$rank, plot3_3$ab, type = "b",
+#   col = "antiquewhite4", pch = 16, lwd = 1)
 
 
-plot5_1 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[13,4:31]))
-plot5_1 <- plot5_1[which(plot5_1$ab!=0),]
-dim(plot5_1)
-plot5_1$rank <- rank(-plot5_1$ab, ties.method = "random")
-plot5_1 <- plot5_1[order(plot5_1$rank), ]
-points(plot5_1$rank, plot5_1$ab, type = "b",
-     col = "chartreuse", pch = 16, lwd = 1)
+#plot4_1 <- data.frame(sp = colnames(dat[,4:31]),
+#    ab = as.numeric(dat[10,4:31]))
+#plot4_1 <- plot4_1[which(plot4_1$ab!=0),]
+#dim(plot4_1)
+#plot4_1$rank <- rank(-plot4_1$ab, ties.method = "random")
+#plot4_1 <- plot4_1[order(plot4_1$rank), ]
+#points(plot4_1$rank, plot4_1$ab, type = "b",
+#    col = "brown1", pch = 16, lwd = 1)
+
+#plot4_2 <- data.frame(sp = colnames(dat[,4:31]),
+#                    ab = as.numeric(dat[11,4:31]))
+#plot4_2 <- plot4_2[which(plot4_2$ab!=0),]
+#dim(plot4_2)
+#plot4_2$rank <- rank(-plot4_2$ab, ties.method = "random")
+#plot4_2 <- plot4_2[order(plot4_1$rank), ]
+#points(plot4_2$rank, plot4_2$ab, type = "b",
+#   col = "brown4", pch = 16, lwd = 1)
+
+#plot4_3 <- data.frame(sp = colnames(dat[,4:31]),
+# ab = as.numeric(dat[12,4:31]))
+#plot4_3 <- plot4_3[which(plot4_3$ab!=0),]
+#dim(plot4_3)
+#plot4_3$rank <- rank(-plot4_3$ab, ties.method = "random")
+#plot4_3 <- plot4_3[order(plot4_3$rank), ]
+#points(plot4_3$rank, plot4_3$ab, type = "b",
+#     col = "brown2", pch = 16, lwd = 1)
 
 
-plot5_2 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[14,4:31]))
-plot5_2 <- plot5_2[which(plot5_2$ab!=0),]
-dim(plot5_2)
-plot5_2$rank <- rank(-plot5_2$ab, ties.method = "random")
-plot5_2 <- plot5_2[order(plot5_2$rank), ]
-points(plot5_2$rank, plot5_2$ab, type = "b",
-     col = "chartreuse3", pch = 16, lwd = 1)
-
-plot5_3 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[15,4:31]))
-plot5_3 <- plot5_3[which(plot5_3$ab!=0),]
-dim(plot5_3)
-plot5_3$rank <- rank(-plot5_3$ab, ties.method = "random")
-plot5_3 <- plot5_3[order(plot5_3$rank), ]
-points(plot5_3$rank, plot5_3$ab, type = "b",
-     col = "chartreuse4", pch = 16, lwd = 1)
+#plot5_1 <- data.frame(sp = colnames(dat[,4:31]),
+#                     ab = as.numeric(dat[13,4:31]))
+#plot5_1 <- plot5_1[which(plot5_1$ab!=0),]
+#dim(plot5_1)
+#plot5_1$rank <- rank(-plot5_1$ab, ties.method = "random")
+#plot5_1 <- plot5_1[order(plot5_1$rank), ]
+#points(plot5_1$rank, plot5_1$ab, type = "b",
+#   col = "chartreuse", pch = 16, lwd = 1)
 
 
-plot6_1 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[16,4:31]))
-plot6_1 <- plot6_1[which(plot6_1$ab!=0),]
-dim(plot6_1)
-plot6_1$rank <- rank(-plot6_1$ab, ties.method = "random")
-plot6_1 <- plot6_1[order(plot6_1$rank), ]
-points(plot6_1$rank, plot6_1$ab, type = "b",
-     col = "cadetblue", pch = 16, lwd = 1)
+#plot5_2 <- data.frame(sp = colnames(dat[,4:31]),
+#                       ab = as.numeric(dat[14,4:31]))
+#plot5_2 <- plot5_2[which(plot5_2$ab!=0),]
+#dim(plot5_2)
+#plot5_2$rank <- rank(-plot5_2$ab, ties.method = "random")
+#plot5_2 <- plot5_2[order(plot5_2$rank), ]
+#points(plot5_2$rank, plot5_2$ab, type = "b",
+#   col = "chartreuse3", pch = 16, lwd = 1)
+
+#plot5_3 <- data.frame(sp = colnames(dat[,4:31]),
+#                      ab = as.numeric(dat[15,4:31]))
+#plot5_3 <- plot5_3[which(plot5_3$ab!=0),]
+#dim(plot5_3)
+#plot5_3$rank <- rank(-plot5_3$ab, ties.method = "random")
+#plot5_3 <- plot5_3[order(plot5_3$rank), ]
+#points(plot5_3$rank, plot5_3$ab, type = "b",
+#   col = "chartreuse4", pch = 16, lwd = 1)
 
 
-plot6_2 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[17,4:31]))
-plot6_2 <- plot6_2[which(plot6_2$ab!=0),]
-dim(plot6_2)
-plot6_2$rank <- rank(-plot6_2$ab, ties.method = "random")
-plot6_2 <- plot6_2[order(plot6_2$rank), ]
-points(plot6_2$rank, plot6_2$ab, type = "b",
-     col = "cadetblue3", pch = 16, lwd = 1)
+#plot6_1 <- data.frame(sp = colnames(dat[,4:31]),
+#                    ab = as.numeric(dat[16,4:31]))
+#plot6_1 <- plot6_1[which(plot6_1$ab!=0),]
+#dim(plot6_1)
+#plot6_1$rank <- rank(-plot6_1$ab, ties.method = "random")
+#plot6_1 <- plot6_1[order(plot6_1$rank), ]
+#points(plot6_1$rank, plot6_1$ab, type = "b",
+#    col = "cadetblue", pch = 16, lwd = 1)
 
 
-plot6_3 <- data.frame(sp = colnames(dat[,4:31]),
-                       ab = as.numeric(dat[18,4:31]))
-plot6_3 <- plot6_3[which(plot6_3$ab!=0),]
-dim(plot6_3)
-plot6_3$rank <- rank(-plot6_3$ab, ties.method = "random")
-plot6_3 <- plot6_3[order(plot6_3$rank), ]
-points(plot6_3$rank, plot6_3$ab, type = "b",
-     col = "cadetblue4", pch = 16, lwd = 1)
+#plot6_2 <- data.frame(sp = colnames(dat[,4:31]),
+#                      ab = as.numeric(dat[17,4:31]))
+#plot6_2 <- plot6_2[which(plot6_2$ab!=0),]
+#dim(plot6_2)
+#plot6_2$rank <- rank(-plot6_2$ab, ties.method = "random")
+#plot6_2 <- plot6_2[order(plot6_2$rank), ]
+#points(plot6_2$rank, plot6_2$ab, type = "b",
+#   col = "cadetblue3", pch = 16, lwd = 1)
 
 
-legend( "topright",legend=c("1_1 (11 species)", "1_2 (12 species)", "1_3 (14 species)", "2_1 (7 species)", "2_2 (7 species)", "2_3 (9 species)", "3_1 (6 species)", "3_2 (6 species)", "3_3 (6 species)", "4_1 (7 species)", "4_2 (10 species)", "4_3 (8 species)", "5_1 (7 species)", "5_2 (8 species)", "5_3 (9 species)", "6_1 (9 species)", "6_2 (13 species)", "6_3 (14 species)"), col= c("coral", "coral2", "coral3", "aquamarine", "aquamarine3", "aquamarine4","antiquewhite", "antiquewhite3","antiquewhite4","brown1", "brown4,brown2", "chartreuse","chartreuse3", "chartreuse4", "cadetblue", "cadetblue3", "cadetblue4"), cex = 0.7)
+#plot6_3 <- data.frame(sp = colnames(dat[,4:31]),
+#                      ab = as.numeric(dat[18,4:31]))
+#plot6_3 <- plot6_3[which(plot6_3$ab!=0),]
+#dim(plot6_3)
+#plot6_3$rank <- rank(-plot6_3$ab, ties.method = "random")
+#plot6_3 <- plot6_3[order(plot6_3$rank), ]
+#points(plot6_3$rank, plot6_3$ab, type = "b",
+#   col = "cadetblue4", pch = 16, lwd = 1)
 
-datplot <- bind_rows(plot1_1,plot1_2,plot1_3)
-plot6_2$plot <- "plot6_2"
+
+#legend( "topright",legend=c("1_1 (11 species)", "1_2 (12 species)", "1_3 (14 species)", "2_1 (7 species)", "2_2 (7 species)", "2_3 (9 species)", "3_1 (6 species)", "3_2 (6 species)", "3_3 (6 species)", "4_1 (7 species)", "4_2 (10 species)", "4_3 (8 species)", "5_1 (7 species)", "5_2 (8 species)", "5_3 (9 species)", "6_1 (9 species)", "6_2 (13 species)", "6_3 (14 species)"), col= c("coral", "coral2", "coral3", "aquamarine", "aquamarine3", "aquamarine4","antiquewhite", "antiquewhite3","antiquewhite4","brown1", "brown4,brown2", "chartreuse","chartreuse3", "chartreuse4", "cadetblue", "cadetblue3", "cadetblue4"), cex = 0.7)
+
+#datplot <- bind_rows(plot1_1,plot1_2,plot1_3)
+
+
+#plot6_2$plot <- "plot6_2"
 
 #plot1 <- cbind(plot1_1[,1:3], plot1_2[,1:3], plot1_3[,1:3])
 
 
-ggplot()+
-  geom_line(aes(rank, ab, colour="plot1_1"), data=plot1_1)+
-geom_line(aes(rank, ab, colour="plot1_2"), data=plot1_2)+
-geom_line(aes(rank, ab, colour="plot1_3"), data=plot1_3)+
-geom_line(aes(rank, ab, colour="plot2_1"), data=plot2_1)+
-geom_line(aes(rank, ab, colour="plot2_2"), data=plot2_2)+
-geom_line(aes(rank, ab, colour="plot2_3"), data=plot2_3)+
-geom_line(aes(rank, ab, colour="plot3_1"), data=plot3_1)+
-geom_line(aes(rank, ab, colour="plot3_2"), data=plot3_2)+
-geom_line(aes(rank, ab, colour="plot3_3"), data=plot3_3)+
-geom_line(aes(rank, ab, colour="plot4_1"), data=plot4_1)+
-geom_line(aes(rank, ab, colour="plot4_2"), data=plot4_2)+
-geom_line(aes(rank, ab, colour="plot4_3"), data=plot4_3)+
-geom_line(aes(rank, ab, colour="plot5_1"), data=plot5_1)+
-geom_line(aes(rank, ab, colour="plot5_2"), data=plot5_2)+
-geom_line(aes(rank, ab, colour="plot5_3"), data=plot5_3)+
-geom_line(aes(rank, ab, colour="plot6_1"), data=plot6_1)+
-geom_line(aes(rank, ab, colour="plot6_2"), data=plot6_2)+
-geom_line(aes(rank, ab, colour="plot6_3"), data=plot6_3)+
-  labs(y = "Abundance", x = "Rank", color = "")
+#ggplot()+
+#  geom_line(aes(rank, ab, colour="plot1_1"), data=plot1_1)+
+#geom_line(aes(rank, ab, colour="plot1_2"), data=plot1_2)+
+#geom_line(aes(rank, ab, colour="plot1_3"), data=plot1_3)+
+#geom_line(aes(rank, ab, colour="plot2_1"), data=plot2_1)+
+#geom_line(aes(rank, ab, colour="plot2_2"), data=plot2_2)+
+#geom_line(aes(rank, ab, colour="plot2_3"), data=plot2_3)+
+#geom_line(aes(rank, ab, colour="plot3_1"), data=plot3_1)+
+#geom_line(aes(rank, ab, colour="plot3_2"), data=plot3_2)+
+#geom_line(aes(rank, ab, colour="plot3_3"), data=plot3_3)+
+#geom_line(aes(rank, ab, colour="plot4_1"), data=plot4_1)+
+#geom_line(aes(rank, ab, colour="plot4_2"), data=plot4_2)+
+#geom_line(aes(rank, ab, colour="plot4_3"), data=plot4_3)+
+#geom_line(aes(rank, ab, colour="plot5_1"), data=plot5_1)+
+#geom_line(aes(rank, ab, colour="plot5_2"), data=plot5_2)+
+#geom_line(aes(rank, ab, colour="plot5_3"), data=plot5_3)+
+#geom_line(aes(rank, ab, colour="plot6_1"), data=plot6_1)+
+#geom_line(aes(rank, ab, colour="plot6_2"), data=plot6_2)+
+#geom_line(aes(rank, ab, colour="plot6_3"), data=plot6_3)+
+#  labs(y = "Abundance", x = "Rank", color = "")
 
+#rank abundance curve per site
+#datsite<-aggregate(data=dat[,1:31],.~site, sum)
 ```
+
 
 ```{r}
 datp_NMDS <- metaMDS(jparks, k = 2)
@@ -584,12 +686,6 @@ points(datf_NMDS, display = "sites", pch = 21, col = "black",
        bg = c("#fc8d59", "#ffffbf", "#91bfdb")[datfclust_3])
 legend(x = 0.4, y = -0.2, legend = c(paste0("Cl. ", seq(1:3))),
        col = c("#fc8d59", "#ffffbf", "#91bfdb"), pch = 16)
-
-```
-
-rank abundance curve per site!
-```{r}
-#datsite<-aggregate(data=dat[,1:31],.~site, sum)
 
 ```
 
