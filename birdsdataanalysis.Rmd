@@ -411,7 +411,7 @@ points(plot5$rank, plot5$relabun, type = "l",
        col = "deepskyblue", pch = 16, lwd = 2)
 points(plot6$rank, plot6$relabun, type = "l",
        col = "deepskyblue3", pch = 16, lwd = 2)
-legend("topright",legend = c("Klosterpark Weende (20 species)", "Cheltenham Park (13 species)", "City Cemetery (16 species)", "City Forest (12 species)", "Forest Weende (12 species)", "Forest Schlucht (12 species)"), col = c("blue3", "deepskyblue", "deepskyblue3", "red2", "coral1", "pink"), cex = 0.7, pch = 16)
+legend("topright",legend = c("Klosterpark Weende", "Cheltenham Park", "City Cemetery", "City Forest", "Forest Weende", "Forest Schlucht"), col = c("blue3", "deepskyblue", "deepskyblue3", "red2", "coral1", "pink"), cex = 0.7, pch = 16)
 
 
 #library(wesanderson)
