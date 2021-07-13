@@ -595,7 +595,7 @@ datsite<-aggregate(data=dat[,1:31],.~site, sum)
 Shannon diversity index
 ```{r}
 H <- diversity(dat[,4:31], index = "shannon")
-plot(H~dat$site, xlab="sampling site", xaxt="n")
-axis(1, at=1:6, labels=c())
+plot(H~dat$site, xlab="sampling site", xaxt="n", ylab = "Shannon index")
+axis(1, at=1:6, labels=c("KL","CI","WE","SC","CH","CE"))
 ```
 
