@@ -593,3 +593,10 @@ rank abundance curve per site!
 
 ```
 
+Shannon diversity index
+```{r}
+H <- diversity(dat[,4:31], index = "shannon")
+plot(H~dat$site, xlab="sampling site", xaxt="n", ylab = "Shannon index")
+axis(1, at=1:6, labels=c("KL","CI","WE","SC","CH","CE"))
+```
+
