@@ -41,9 +41,10 @@ dat$rarefied_richness <- rarefy(dat[,4:31],min(dat$species_abund)) #rarefied ric
 After, data is observed comparing the plots from parks and forests.
 
 ```{r}
-boxplot(species_richness~category, data=dat)
-boxplot(log(species_abund+1)~category, data=dat)
-boxplot(rarefied_richness~category, data=dat)
+boxplot(species_richness~category, data=dat, xlab= "category", ylab= "species richness")
+boxplot(log(species_abund+1)~category, data=dat, xlab= "category", ylab= "species abundance")
+?boxplot
+boxplot(rarefied_richness~category, data=dat, xlab= "category", ylab= "rarefied richness")
 
 ```
 
@@ -588,7 +589,7 @@ legend(x = 0.4, y = -0.2, legend = c(paste0("Cl. ", seq(1:3))),
 
 rank abundance curve per site!
 ```{r}
-datsite<-aggregate(data=dat[,1:31],.~site, sum)
+#datsite<-aggregate(data=dat[,1:31],.~site, sum)
 
 ```
 
