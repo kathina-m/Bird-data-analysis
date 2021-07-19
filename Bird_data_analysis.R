@@ -57,8 +57,8 @@ qqnorm(mod3, ~ resid(.,type="p"), abline=c(0,1)) #check for normality of residua
 SAC_park <- specaccum(subset(dat[,4:31], dat$category == "park"))
 SAC_fore <- specaccum(subset(dat[,4:31], dat$category == "forest"))
 
-plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumulation curve")
-plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
+plot(SAC_park, xlab = "sampling plots", ylab = "species richness")
+plot(SAC_fore, xlab = "plots", ylab = "species richness", col="green", add = T)
 legend("bottomright", legend = c("park","forest"), col = c("black","green"),lwd=1, bty = "n")
 
 #### RAREFIED VS. OBSERVED SPECIES ####
