@@ -291,7 +291,7 @@ simpsonpark <- as.matrix(simpark)[,]
 plot(simpsonpark)
 
 # Jaccard similarity
-jparks <- betadiver(parks[,1:31], method = "j")
+jparks <- betadiver(parks[,4:31], method = "j")
 plot(as.matrix(jparks)[,])
 
 #Sorensen similarity
