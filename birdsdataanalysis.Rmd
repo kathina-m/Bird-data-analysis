@@ -41,10 +41,10 @@ dat$rarefied_richness <- rarefy(dat[,4:31],min(dat$species_abund)) #rarefied ric
 After, data is observed comparing the plots from parks and forests.
 
 ```{r}
-boxplot(species_richness~category, data=dat, xlab= "category", ylab= "species richness")
-boxplot(log(species_abund+1)~category, data=dat, xlab= "category", ylab= "species abundance")
+boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
+boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance")
 ?boxplot
-boxplot(rarefied_richness~category, data=dat, xlab= "category", ylab= "rarefied richness")
+boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
 
 ```
 
@@ -104,7 +104,10 @@ ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
   geom_text(x=2.51,y=15.3,label=expression(paste("R"^2,"c: 0.6851")), size=3.5) +
   labs(x="log(mininmal dbh [cm])", y="observed species richness")
 
+```
 
+#2c Linear Mixed Effect models
+```{r}
 ### MIXED EFFECTS MODEL WITH BIRD ABUNDANCE
 mod2.1 <- lme(species_abund ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + log(n_microhabitats) + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
 summary(mod2.1)
@@ -117,6 +120,10 @@ anova(mod2.2, mod2.3)
 #mod2.4<-update(mod2.3, ~.-canopy_cover)
 #summary(mod2.4)
 #anova(mod2.3,mod2.4)
+```
+
+#2d Plotting 
+``` {r}
 
 # plot model for abundance vs. canopy cover
 mod_can<-lme(species_abund ~ canopy_cover, random = (~1|site), data=dat, method="ML")
@@ -196,10 +203,10 @@ Now the species accumulation curve is shown.
 SAC_park <- specaccum(subset(dat[,4:31], dat$category == "park"))
 SAC_fore <- specaccum(subset(dat[,4:31], dat$category == "forest"))
 
-plot(SAC_park, xlab = "plots", ylab = "species richness", main="species accumulation curve")
+plot(SAC_park, xlab = "Plots", ylab = "Species richness", main="Species accumulation curve")
 
-plot(SAC_fore, xlab = "plots", ylab = "species richness", main="species accumulation curve", col="green", add = T)
-legend("bottomright", legend = c("park","forest"), col = c("black","green"), lwd=1, bty = "n")
+plot(SAC_fore, xlab = "Plots", ylab = "Species richness", main="Species accumulation curve", col="green", add = T)
+legend("bottomright", legend = c("Park","Forest"), col = c("black","green"), lwd=1, bty = "n")
 ```
 
 
@@ -400,7 +407,7 @@ plot6 <- plot6[order(plot6$rank),]
 plot(plot1$rank, plot1$relabun, type = "l",
      col = "blue3", pch = 16, lwd = 2,
      ylim = c(0, 35),
-     xlab = "Rank", ylab = "relative species abundance [%]")
+     xlab = "Rank", ylab = "Relative species abundance [%]")
 points(plot2$rank, plot2$relabun, type = "l",
        col = "red2", pch = 16, lwd = 2)
 points(plot3$rank, plot3$relabun, type = "l",
