@@ -132,7 +132,7 @@ r.squaredGLMM(mod_can)
 ggplot(dat, aes(x = canopy_cover, y = species_abund))+
   geom_point() +
   geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=70, y=35, label="p-value: 0.0015", size=3.5) +
+  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
   geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.5312")), size=3.5) +
   labs(x="canopy cover [%]", y="observed species abundance")
 
@@ -143,7 +143,7 @@ r.squaredGLMM(mod_dbh)
 ggplot(dat, aes(x = log(dbh_min), y = species_abund))+
   geom_point() +
   geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=2.5, y=35, label="p-value: 0.0209", size=3.5) +
+  geom_text(x=2.5, y=35, label="p-value: 0.0053", size=3.5) +
   geom_text(x=2.41,y=33.5, label=expression(paste("R"^2,"c: 0.5226")), size=3.5) +
   labs(x="log(mininmal dbh [cm])", y="observed species abundance")
 
