@@ -43,7 +43,7 @@ After, data is observed comparing the plots from parks and forests.
 ```{r}
 boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
 boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance")
-?boxplot
+#?boxplot
 boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
 
 ```
@@ -67,7 +67,7 @@ qqnorm(mod1, ~resid(.,type="p"), abline = c(0,1)) #check for normality of residu
 
 round(cor(dat[,32:45]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
-mod1 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+mod1 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + dbh_min5 + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
 summary(mod1)
 
 mod1.1 <- stepAIC(mod1) #model simplification based on AIC-value of the model
@@ -109,14 +109,16 @@ ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
 #2c Linear Mixed Effect models
 ```{r}
 ### MIXED EFFECTS MODEL WITH BIRD ABUNDANCE
-mod2.1 <- lme(species_abund ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + log(n_microhabitats) + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+mod2.1 <- lme(species_abund ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + dbh_min5 + log(n_microhabitats) + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
 summary(mod2.1)
 
 mod2.2 <- stepAIC(mod2.1) #model simplification based on AIC-value of the model
 summary(mod2.2) #final model which includes only the most important predictors 
-mod2.3 <- update(mod2.2, ~.-size)
-summary(mod2.3)
-anova(mod2.2, mod2.3)
+anova(mod2.1, mod2.2)
+#mod2.3 <- update(mod2.2, ~.-size)
+#summary(mod2.3)
+#anova(mod2.2, mod2.3)
+
 #mod2.4<-update(mod2.3, ~.-canopy_cover)
 #summary(mod2.4)
 #anova(mod2.3,mod2.4)
@@ -124,6 +126,18 @@ anova(mod2.2, mod2.3)
 
 #2d Plotting 
 ``` {r}
+
+# plot model for abundance vs. size
+mod_size<-lme(species_abund ~ size, random = (~1|site), data=dat, method="ML")
+r.squaredGLMM(mod_size)
+  
+ggplot(dat, aes(x = size, y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
+  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.4465")), size=3.5) +
+  labs(x="Site", y="observed species abundance")
+
 
 # plot model for abundance vs. canopy cover
 mod_can<-lme(species_abund ~ canopy_cover, random = (~1|site), data=dat, method="ML")
@@ -157,7 +171,9 @@ ggplot(dat, aes(x = log(n_microhabitats)+1, y = species_abund))+
   geom_text(x=1.6, y=35, label="p-value: 0.0098", size=3.5) +
   geom_text(x=1.51,y=33.5, label=expression(paste("R"^2,"c: 0.6383")), size=3.5) +
   labs(x="log(number of microhabitats)", y="observed species abundance")
+```
 
+```{r}
 
 ### MIXED EFFECTS MODEL WITH RAREFIED RICHNESS
 mod3 <- lme(rarefied_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
