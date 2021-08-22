@@ -38,14 +38,32 @@ dat$species_abund <- rowSums(dat[,4:31]) #abundances
 dat$rarefied_richness <- rarefy(dat[,4:31],min(dat$species_abund)) #rarefied richness based on the subsample with the lowest number of individuals
 ```
 
+subsets for forest and park + median, mean, min max... 
+```{r}
+forest <- subset(dat, category=="forest")
+park <- subset(dat, category=="park")
+median(forest$species_abund)
+median(park$species_abund)
+```
+
 After, data is observed comparing the plots from parks and forests.
 
 ```{r}
-boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
-boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance")
-?boxplot
-boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
+hist(dat$species_richness) # not normally distributed
+kruskal.test(dat$species_richness, dat$category) #p-value = 0.01533
+boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Observed species richness")
+text(1,13.6,labels = "p-value: 0.015", cex = 0.8)
 
+hist(dat$species_abund) # not normally distributed
+kruskal.test(dat$species_abund, dat$category) #p-value = 0.0046
+boxplot(log(species_abund)~category, data=dat, xlab= "Category", ylab= "Log (species abundance)")
+text(1,3.53,labels = "p-value: 0.005", cex = 0.8)
+
+hist(dat$rarefied_richness) # normally distributed
+mod<-aov(dat$rarefied_richness ~ dat$category)
+summary(mod) #p-value: 0.291
+boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
+text(1,5.5,labels = "p-value: 0.291", cex = 0.8)
 ```
 
 ##Now let's begin with the data analysis
