@@ -28,8 +28,8 @@ In this second chunk, the data to be used will be loaded into a data frame and t
 
 ```{r}
 dat <- read.csv("data/birds_dataset.csv", sep=";")
-parks <- read.csv("data/parks.csv", sep=";")
-forest <- read.csv("data/forest.csv", sep=";")
+# parks <- read.csv("data/parks.csv", sep=";") 
+# forest <- read.csv("data/forest.csv", sep=";") obsolete due to creation of subsamples below
 dat$category <- as.factor(dat$category)
 dat$site <- as.factor(dat$site)
 ```
@@ -40,10 +40,6 @@ Following, species richness, species abundance and rarefied richness of species 
 dat$species_richness <- specnumber(dat[,4:31]) #species richness
 dat$species_abund <- rowSums(dat[,4:31]) #abundances
 dat$rarefied_richness <- rarefy(dat[,4:31],min(dat$species_abund)) #rarefied richness based on the subsample with the lowest number of individuals
-
-dat$species_richnessparks <- specnumber(parks[,4:31]) #species richness
-dat$species_richnessforest <- specnumber(forest[,4:31]) #species richness
-
 
 ```
 
@@ -79,8 +75,8 @@ summary(mod) #p-value: 0.291
 boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
 text(1,5.5,labels = "p-value: 0.291", cex = 0.8)
 
-hist(dat$species_richnessparks)
-hist(dat$species_richnessforest)
+hist(park$species_richness)
+hist(forest$species_richness)
 
 layout(matrix(c(1:4), nrow=2, byrow=FALSE))
 boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
