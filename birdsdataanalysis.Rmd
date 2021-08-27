@@ -55,8 +55,8 @@ text(1,13.6,labels = "p-value: 0.015", cex = 0.8)
 
 hist(dat$species_abund) # not normally distributed
 kruskal.test(dat$species_abund, dat$category) #p-value = 0.0046
-boxplot(log(species_abund)~category, data=dat, xlab= "Category", ylab= "Log (species abundance)")
-text(1,3.53,labels = "p-value: 0.005", cex = 0.8)
+boxplot(species_abund~category, data=dat, xlab= "Category", ylab= "species abundance")
+text(1,35,labels = "p-value: 0.005", cex = 0.8)
 
 hist(dat$rarefied_richness) # normally distributed
 mod<-aov(dat$rarefied_richness ~ dat$category)
