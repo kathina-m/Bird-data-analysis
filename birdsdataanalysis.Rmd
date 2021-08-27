@@ -8,7 +8,6 @@ output:
 editor_options:
   chunk_output_type: console
 ---
-hmmm
 This document have been created to include all relevant parts in the analysis of our animal diversity project.
 
 ##Data preparation and data observation
