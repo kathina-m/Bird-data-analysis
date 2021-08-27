@@ -3,8 +3,9 @@ title: "Analysis_birdsdata"
 author: "Cheyenne, Kathina & Lina"
 date: "4/7/2021"
 output:
-  pdf_document: default
+  word_document: default
   html_document: default
+  pdf_document: default
 editor_options:
   chunk_output_type: console
 ---
@@ -20,12 +21,16 @@ library(vegan)
 library(nlme)
 library(MASS)
 library(MuMIn)
+?rowSums
+?r.squar
 ```
 
 In this second chunk, the data to be used will be loaded into a data frame and transferred into adequate data types.
 
 ```{r}
 dat <- read.csv("data/birds_dataset.csv", sep=";")
+parks <- read.csv("data/parks.csv", sep=";")
+forest <- read.csv("data/forest.csv", sep=";")
 dat$category <- as.factor(dat$category)
 dat$site <- as.factor(dat$site)
 ```
@@ -36,6 +41,11 @@ Following, species richness, species abundance and rarefied richness of species 
 dat$species_richness <- specnumber(dat[,4:31]) #species richness
 dat$species_abund <- rowSums(dat[,4:31]) #abundances
 dat$rarefied_richness <- rarefy(dat[,4:31],min(dat$species_abund)) #rarefied richness based on the subsample with the lowest number of individuals
+
+dat$species_richnessparks <- specnumber(parks[,4:31]) #species richness
+dat$species_richnessforest <- specnumber(forest[,4:31]) #species richness
+
+
 ```
 
 subsets for forest and park + median, mean, min max... 
@@ -56,7 +66,7 @@ text(1,13.6,labels = "p-value: 0.015", cex = 0.8)
 
 hist(dat$species_abund) # not normally distributed
 kruskal.test(dat$species_abund, dat$category) #p-value = 0.0046
-boxplot(log(species_abund)~category, data=dat, xlab= "Category", ylab= "Log (species abundance)")
+boxplot(log(species_abund)~category, data=dat, xlab= "Category", ylab= "Species abundance")
 text(1,3.53,labels = "p-value: 0.005", cex = 0.8)
 
 hist(dat$rarefied_richness) # normally distributed
@@ -64,6 +74,32 @@ mod<-aov(dat$rarefied_richness ~ dat$category)
 summary(mod) #p-value: 0.291
 boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
 text(1,5.5,labels = "p-value: 0.291", cex = 0.8)
+
+hist(dat$species_richnessparks)
+hist(dat$species_richnessforest)
+
+layout(matrix(c(1:4), nrow=2, byrow=FALSE))
+boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
+boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance")
+?boxplot
+boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
+layout(matrix(c(1:4), nrow=2, byrow=FALSE))
+boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness", col= c("lightgreen", "lightblue"))
+boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance", col= c("lightgreen", "lightblue"))
+?boxplot
+boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness", col= c("lightgreen", "lightblue"))
+```
+```{r}
+
+boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
+boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance")
+?boxplot
+boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
+
+boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness", col= c("lightgreen", "lightblue"))
+boxplot(log(species_abund+1)~category, data=dat, xlab= "Category", ylab= "Species abundance", col= c("lightgreen", "lightblue"))
+?boxplot
+boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness", col= c("lightgreen", "lightblue"))
 ```
 
 ##Now let's begin with the data analysis
@@ -217,6 +253,60 @@ ggplot(dat, aes(x = rarefied_richness, y = log(dbh_min)))+
 ```
 
 
+plot
+graphs 
+
+```{r}
+
+
+
+
+a <- ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
+  geom_point() +
+  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=2.6, y=16, label="p-value: 0.0001", size=3.5) +
+  geom_text(x=2.51,y=15.3,label=expression(paste("R"^2,"c: 0.6851")), size=3.5) +
+  labs(x="log(mininmal dbh [cm])", y="observed species richness")
+
+b <- ggplot(dat, aes(x = size, y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
+  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.4465")), size=3.5) +
+  labs(x="Site", y="observed species abundance")
+
+c <-ggplot(dat, aes(x = canopy_cover, y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
+  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.5312")), size=3.5) +
+  labs(x="canopy cover [%]", y="observed species abundance")
+
+d <- ggplot(dat, aes(x = log(dbh_min), y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=2.5, y=35, label="p-value: 0.0053", size=3.5) +
+  geom_text(x=2.41,y=33.5, label=expression(paste("R"^2,"c: 0.5226")), size=3.5) +
+  labs(x="log(mininmal dbh [cm])", y="observed species abundance")
+
+
+e <- ggplot(dat, aes(x = log(n_microhabitats)+1, y = species_abund))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=1.6, y=35, label="p-value: 0.0098", size=3.5) +
+  geom_text(x=1.51,y=33.5, label=expression(paste("R"^2,"c: 0.6383")), size=3.5) +
+  labs(x="log(number of microhabitats)", y="observed species abundance")
+
+
+f <- ggplot(dat, aes(x = rarefied_richness, y = log(dbh_min)))+
+  geom_point() +
+  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
+  geom_text(x=6, y=4.8, label="p-value: 0.0223", size=3.5) +
+  geom_text(x=5.92,y=4.55, label=expression(paste("R"^2,"c: 0.4573")), size=3.5) +
+  labs(x="log(minimal dbh [cm])", y="rarefied species richness")
+
+```
+
 ##2c Ordination with NMDS (to look for differences in species composition)
 ```{r out.width = "100%"}
 nmd1 <- metaMDS(dat[,4:31], distance="horn", k=2) #NMDS analysis based on Morisita-Horn-Index as a dissimilarity measure
@@ -247,8 +337,8 @@ legend("bottomright", legend = c("Park","Forest"), col = c("black","green"), lwd
 Analysis of bird's diversity and the variables measured from these two types of ecosystems.
 
 ```{r}
-parks <- read.csv("data/parks.csv", sep=";")
-forest <- read.csv("data/forest.csv", sep=";")
+# parks <- read.csv("data/parks.csv", sep=";")
+# forest <- read.csv("data/forest.csv", sep=";")
 alpha <- specnumber(dat[,4:31]) # or use the binary site-species matrix
 gamma <- ncol(dat[,colSums(dat[,4:31])>0])
 
@@ -733,7 +823,7 @@ legend(x = 0.4, y = -0.2, legend = c(paste0("Cl. ", seq(1:3))),
 Shannon diversity index
 ```{r}
 H <- diversity(dat[,4:31], index = "shannon")
-plot(H~dat$site, xlab="sampling site", xaxt="n", ylab = "Shannon index")
+plot(H~dat$site, xlab="Sampling plots", xaxt="n", ylab = "Shannon index")
 axis(1, at=1:6, labels=c("KL","CI","WE","SC","CH","CE"))
 ```
 
