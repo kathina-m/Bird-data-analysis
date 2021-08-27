@@ -9,7 +9,6 @@ output:
 editor_options:
   chunk_output_type: console
 ---
-
 This document have been created to include all relevant parts in the analysis of our animal diversity project.
 
 ##Data preparation and data observation
@@ -66,8 +65,13 @@ text(1,13.6,labels = "p-value: 0.015", cex = 0.8)
 
 hist(dat$species_abund) # not normally distributed
 kruskal.test(dat$species_abund, dat$category) #p-value = 0.0046
+<<<<<<< HEAD
 boxplot(log(species_abund)~category, data=dat, xlab= "Category", ylab= "Species abundance")
 text(1,3.53,labels = "p-value: 0.005", cex = 0.8)
+=======
+boxplot(species_abund~category, data=dat, xlab= "Category", ylab= "species abundance")
+text(1,35,labels = "p-value: 0.005", cex = 0.8)
+>>>>>>> d80fae5ecd9e41000fa2bc0df859bd4886e423af
 
 hist(dat$rarefied_richness) # normally distributed
 mod<-aov(dat$rarefied_richness ~ dat$category)
@@ -121,7 +125,7 @@ qqnorm(mod1, ~resid(.,type="p"), abline = c(0,1)) #check for normality of residu
 
 round(cor(dat[,32:45]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
-mod1 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + dbh_min5 + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+mod1 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + dbh_mean + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
 summary(mod1)
 
 mod1.1 <- stepAIC(mod1) #model simplification based on AIC-value of the model
@@ -179,8 +183,7 @@ anova(mod2.1, mod2.2)
 ```
 
 #2d Plotting 
-``` {r}
-
+```{r}
 # plot model for abundance vs. size
 mod_size<-lme(species_abund ~ size, random = (~1|site), data=dat, method="ML")
 r.squaredGLMM(mod_size)
@@ -190,7 +193,7 @@ ggplot(dat, aes(x = size, y = species_abund))+
   geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
   geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
   geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.4465")), size=3.5) +
-  labs(x="Site", y="observed species abundance")
+  labs(x="Size", y="observed species abundance")
 
 
 # plot model for abundance vs. canopy cover
