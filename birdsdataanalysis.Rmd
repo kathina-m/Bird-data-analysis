@@ -59,12 +59,9 @@ kruskal.test(dat$species_richness, dat$category) #p-value = 0.01533
 boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Observed species richness")
 text(1,13.6,labels = "p-value: 0.015", cex = 0.8)
 
+
 hist(dat$species_abund) # not normally distributed
 kruskal.test(dat$species_abund, dat$category) #p-value = 0.0046
-
-boxplot(log(species_abund)~category, data=dat, xlab= "Category", ylab= "Species abundance")
-text(1,3.53,labels = "p-value: 0.005", cex = 0.8)
-
 boxplot(species_abund~category, data=dat, xlab= "Category", ylab= "species abundance")
 text(1,35,labels = "p-value: 0.005", cex = 0.8)
 
@@ -74,9 +71,6 @@ mod<-aov(dat$rarefied_richness ~ dat$category)
 summary(mod) #p-value: 0.291
 boxplot(rarefied_richness~category, data=dat, xlab= "Category", ylab= "Rarefied richness")
 text(1,5.5,labels = "p-value: 0.291", cex = 0.8)
-
-hist(park$species_richness)
-hist(forest$species_richness)
 
 layout(matrix(c(1:4), nrow=2, byrow=FALSE))
 boxplot(species_richness~category, data=dat, xlab= "Category", ylab= "Species richness")
@@ -121,189 +115,108 @@ qqnorm(mod1, ~resid(.,type="p"), abline = c(0,1)) #check for normality of residu
 
 round(cor(dat[,32:45]),2) #check which predictor variables are strongly correlated (below -0.7 or above 0.7) - highly correlated variables should not be included together in the same model (select only one of them, e.g. the one more strongly related to the response variable)
 
-mod1 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + dbh_mean + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
-summary(mod1)
+mod2 <- lme(species_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + dbh_mean + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+summary(mod2)
 
-mod1.1 <- stepAIC(mod1) #model simplification based on AIC-value of the model
-summary(mod1.1) #final model which includes only the most important predictors 
-mod1.2 <- update(mod1.1, ~.-n_tree_spec)
-summary(mod1.2)
-anova(mod1.1, mod1.2)
-mod1.3 <- update(mod1.2, ~.-temperature)
-summary(mod1.3)
-anova(mod1.2, mod1.3) #close to significcance effect with these variables (species increasing with increasing dbh min.) 
-mod1.4 <- update(mod1.3, ~.-canopy_cover)
-summary(mod1.4)
-anova(mod1.3,mod1.4)
+mod2.1 <- stepAIC(mod2) #model simplification based on AIC-value of the model
+summary(mod2.1) #final model which includes only the most important predictors 
+mod2.2 <- update(mod2.1, ~.-n_tree_spec)
+summary(mod2.2)
+anova(mod2.1, mod2.2)
+mod2.3 <- update(mod2.2, ~.-temperature)
+summary(mod2.3)
+anova(mod2.2, mod2.3) #close to significcance effect with these variables (species increasing with increasing dbh min.) 
+mod2.4 <- update(mod2.3, ~.-canopy_cover)
+summary(mod2.4)
+anova(mod2.3,mod2.4)
 
 #final model:
 #lme(species_richness ~ log(dbh_min), random = (~1|site), data=dat, method="ML")
 #https://jonlefcheck.net/2013/03/13/r2-for-linear-mixed-effects-models/
-r.squaredGLMM(mod1.4)
+r.squaredGLMM(mod2.4)
 
-plot(mod1.4) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
-qqnorm(mod1.4, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+plot(mod2.4) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod2.4, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 
 #standard deviation, coefficient of variation (sd/mean) to make variation independent from out mean value of dbh_mean in this case, and check whether is correlated with the other variables and if this is the case we would need to include it in mod2 and check correlation with (vif for the model)  and cor for correlation
 
 #dat$sddbh_mean <- sd() we can try as alternative
 library(car)
 
-vif(mod1.2)
+vif(mod2.2)
 
-ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
+ggplot(dat, aes(x = dbh_mean, y = species_richness))+
   geom_point() +
   geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=2.6, y=16, label="p-value: 0.0001", size=3.5) +
-  geom_text(x=2.51,y=15.3,label=expression(paste("R"^2,"c: 0.6851")), size=3.5) +
-  labs(x="log(mininmal dbh [cm])", y="observed species richness")
+  geom_text(x=30, y=15, label="p-value: 0.0442", size=3.5) +
+  geom_text(x=30,y=14.3,label=expression(paste("R"^2,"c: 0.6571")), size=3.5) +
+  labs(x="Mean dbh [cm]", y="Observed species richness")
 
 ```
 
 #2c Linear Mixed Effect models
 ```{r}
 ### MIXED EFFECTS MODEL WITH BIRD ABUNDANCE
-mod2.1 <- lme(species_abund ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + dbh_min5 + log(n_microhabitats) + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
-summary(mod2.1)
+mod3.1 <- lme(species_abund ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + dbh_mean + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
 
-mod2.2 <- stepAIC(mod2.1) #model simplification based on AIC-value of the model
-summary(mod2.2) #final model which includes only the most important predictors 
-anova(mod2.1, mod2.2)
-#mod2.3 <- update(mod2.2, ~.-size)
-#summary(mod2.3)
-#anova(mod2.2, mod2.3)
+summary(mod3.1)
 
-#mod2.4<-update(mod2.3, ~.-canopy_cover)
-#summary(mod2.4)
-#anova(mod2.3,mod2.4)
+mod3.2 <- stepAIC(mod3.1) #model simplification based on AIC-value of the model
+summary(mod3.2) #final model which includes only the most important predictors
+mod3.3 <- update(mod3.2, ~.-n_tree_spec)
+summary(mod3.3)
+anova(mod3.2,mod3.3)
+mod3.4 <- update(mod3.3, ~.-size)
+summary(mod3.4)
+anova(mod3.3,mod3.4)
+mod3.5 <- update(mod3.4, ~.-n_microhabitats)
+summary(mod3.5)
+anova(mod3.4,mod3.5)
+#mod3.6<- update(mod3.5, ~.-temperature)
+#summary(mod3.6)
+#anova(mod3.5,mod3.6) # significant.. 0.0136 so we cannot remove more parameters and final model is 3.5
+
+plot(mod3.5) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod3.5, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 ```
 
 #2d Plotting 
 ```{r}
-# plot model for abundance vs. size
-mod_size<-lme(species_abund ~ size, random = (~1|site), data=dat, method="ML")
-r.squaredGLMM(mod_size)
-  
-ggplot(dat, aes(x = size, y = species_abund))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
-  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.4465")), size=3.5) +
-  labs(x="Size", y="observed species abundance")
-
-
 # plot model for abundance vs. canopy cover
-mod_can<-lme(species_abund ~ canopy_cover, random = (~1|site), data=dat, method="ML")
-r.squaredGLMM(mod_can)
-  
+r.squaredGLMM(mod3.5)
+
 ggplot(dat, aes(x = canopy_cover, y = species_abund))+
   geom_point() +
   geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
-  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.5312")), size=3.5) +
-  labs(x="canopy cover [%]", y="observed species abundance")
+  geom_text(x=70, y=35, label="p-value: 0.0320", size=3.5) +
+  geom_text(x=70,y=33.5, label=expression(paste("R"^2,"c: 0.7430")), size=3.5) +
+  labs(x="Canopy cover [%]", y="Species abundance")
 
-#plot model for abundance vs. minimal dbh
-mod_dbh<-lme(species_abund ~ log(dbh_min), random = (~1|site), data=dat, method="ML")
-r.squaredGLMM(mod_dbh)
+#plot species abundance vs. dbh_mean
 
-ggplot(dat, aes(x = log(dbh_min), y = species_abund))+
+ggplot(dat, aes(x = dbh_mean, y = species_abund))+
   geom_point() +
   geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=2.5, y=35, label="p-value: 0.0053", size=3.5) +
-  geom_text(x=2.41,y=33.5, label=expression(paste("R"^2,"c: 0.5226")), size=3.5) +
-  labs(x="log(mininmal dbh [cm])", y="observed species abundance")
-
-# plot model for abundance vs. microhabitats
-mod_mic<-lme(species_abund ~ log(n_microhabitats), random = (~1|site), data=dat, method="ML")
-r.squaredGLMM(mod_mic)
-  
-ggplot(dat, aes(x = log(n_microhabitats)+1, y = species_abund))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=1.6, y=35, label="p-value: 0.0098", size=3.5) +
-  geom_text(x=1.51,y=33.5, label=expression(paste("R"^2,"c: 0.6383")), size=3.5) +
-  labs(x="log(number of microhabitats)", y="observed species abundance")
+  geom_text(x=30, y=35, label="p-value: 0.0137", size=3.5) +
+  geom_text(x=30,y=33.5, label=expression(paste("R"^2,"c: 0.7430")), size=3.5) +
+  labs(x="Mean dbh [cm]", y="Species abundance")
 ```
 
 ```{r}
 
 ### MIXED EFFECTS MODEL WITH RAREFIED RICHNESS
-mod3 <- lme(rarefied_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + log(dbh_min) + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
-summary(mod3)
+mod4 <- lme(rarefied_richness ~ category*size + canopy_cover + n_tree_spec + n_tree_ind + dbh_mean + n_microhabitats + temperature, random = (~1|site), data=dat, method="ML") #initial, full model with all potential predictor variables
+summary(mod4)
 
-mod3.1 <- stepAIC(mod3) #model simplification based on AIC-value of the model
-summary(mod3.1) #final model which includes only the most important predictors 
+mod4.1 <- stepAIC(mod4) #model simplification based on AIC-value of the model
+summary(mod4.1) #final model which includes only the most important predictors 
+mod4.2<-update(mod4.1,~.-n_tree_spec)
+summary(mod4.2)
+anova(mod4.1,mod4.2) # significant so final model is 4.1
+# n_tree_spec: p-value 0.0638; size: p-value 0.7631
 
-
-# plot model for rarefied richness vs. min dbh
-mod_dbh<-lme(rarefied_richness ~ log(dbh_min), random = (~1|site), data=dat, method="ML")
-r.squaredGLMM(mod3.1)
-  
-ggplot(dat, aes(x = rarefied_richness, y = log(dbh_min)))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=6, y=4.8, label="p-value: 0.0223", size=3.5) +
-  geom_text(x=5.92,y=4.55, label=expression(paste("R"^2,"c: 0.4573")), size=3.5) +
-  labs(x="log(minimal dbh [cm])", y="rarefied species richness")
-
-#plot(log(dbh_min)~rarefied_richness, data=dat, ylim=c(0,5))
-#mod<-lm(rarefied_richness ~ log(dbh_min), data=dat, poly(degree = 2))
-```
-
-
-plot
-graphs 
-
-```{r}
-
-
-
-
-a <- ggplot(dat, aes(x = log(dbh_min), y = species_richness))+
-  geom_point() +
-  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=2.6, y=16, label="p-value: 0.0001", size=3.5) +
-  geom_text(x=2.51,y=15.3,label=expression(paste("R"^2,"c: 0.6851")), size=3.5) +
-  labs(x="log(mininmal dbh [cm])", y="observed species richness")
-
-b <- ggplot(dat, aes(x = size, y = species_abund))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
-  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.4465")), size=3.5) +
-  labs(x="Site", y="observed species abundance")
-
-c <-ggplot(dat, aes(x = canopy_cover, y = species_abund))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=70, y=35, label="p-value: 0.0136", size=3.5) +
-  geom_text(x=72,y=33.5, label=expression(paste("R"^2,"c: 0.5312")), size=3.5) +
-  labs(x="canopy cover [%]", y="observed species abundance")
-
-d <- ggplot(dat, aes(x = log(dbh_min), y = species_abund))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=2.5, y=35, label="p-value: 0.0053", size=3.5) +
-  geom_text(x=2.41,y=33.5, label=expression(paste("R"^2,"c: 0.5226")), size=3.5) +
-  labs(x="log(mininmal dbh [cm])", y="observed species abundance")
-
-
-e <- ggplot(dat, aes(x = log(n_microhabitats)+1, y = species_abund))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=1.6, y=35, label="p-value: 0.0098", size=3.5) +
-  geom_text(x=1.51,y=33.5, label=expression(paste("R"^2,"c: 0.6383")), size=3.5) +
-  labs(x="log(number of microhabitats)", y="observed species abundance")
-
-
-f <- ggplot(dat, aes(x = rarefied_richness, y = log(dbh_min)))+
-  geom_point() +
-  geom_smooth(method = lm, se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=6, y=4.8, label="p-value: 0.0223", size=3.5) +
-  geom_text(x=5.92,y=4.55, label=expression(paste("R"^2,"c: 0.4573")), size=3.5) +
-  labs(x="log(minimal dbh [cm])", y="rarefied species richness")
-
+plot(mod4.2) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod4.2, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 ```
 
 ##2c Ordination with NMDS (to look for differences in species composition)
