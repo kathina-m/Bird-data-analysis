@@ -123,34 +123,34 @@ summary(mod2.1) #final model which includes only the most important predictors
 mod2.2 <- update(mod2.1, ~.-n_tree_spec)
 summary(mod2.2)
 anova(mod2.1, mod2.2)
-mod2.3 <- update(mod2.2, ~.-temperature)
+mod2.3 <- update(mod2.2, ~.-canopy_cover)
 summary(mod2.3)
-anova(mod2.2, mod2.3) #close to significcance effect with these variables (species increasing with increasing dbh min.) 
-mod2.4 <- update(mod2.3, ~.-canopy_cover)
-summary(mod2.4)
-anova(mod2.3,mod2.4)
+anova(mod2.2, mod2.3) 
+#mod2.4 <- update(mod2.3, ~.-temperature)
+#summary(mod2.4)
+#anova(mod2.3,mod2.4)
 
 #final model:
 #lme(species_richness ~ log(dbh_min), random = (~1|site), data=dat, method="ML")
 #https://jonlefcheck.net/2013/03/13/r2-for-linear-mixed-effects-models/
-r.squaredGLMM(mod2.4)
+r.squaredGLMM(mod2.3)
 
-plot(mod2.4) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
-qqnorm(mod2.4, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
+plot(mod2.3) #check for homogeneity of variances (data points should have similar vertical spread along the x-axis)
+qqnorm(mod2.3, ~resid(.,type="p"), abline=c(0,1)) #check for normality of residuals (should not be completely off the line)
 
 #standard deviation, coefficient of variation (sd/mean) to make variation independent from out mean value of dbh_mean in this case, and check whether is correlated with the other variables and if this is the case we would need to include it in mod2 and check correlation with (vif for the model)  and cor for correlation
 
 #dat$sddbh_mean <- sd() we can try as alternative
-library(car)
+#library(car)
 
-vif(mod2.2)
+#vif(mod2.2)
 
-ggplot(dat, aes(x = dbh_mean, y = species_richness))+
-  geom_point() +
-  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5) +
-  geom_text(x=30, y=15, label="p-value: 0.0442", size=3.5) +
-  geom_text(x=30,y=14.3,label=expression(paste("R"^2,"c: 0.6571")), size=3.5) +
-  labs(x="Mean dbh [cm]", y="Observed species richness")
+#ggplot(dat, aes(x = dbh_mean, y = species_richness))+
+#  geom_point() +
+#  geom_smooth(method = lm,se = TRUE, colour = 'green', size = 1.5) +
+#  geom_text(x=30, y=15, label="p-value: 0.0442", size=3.5) +
+#  geom_text(x=30,y=14.3,label=expression(paste("R"^2,"c: 0.6571")), size=3.5) +
+#  labs(x="Mean dbh [cm]", y="Observed species richness")
 
 ```
 
